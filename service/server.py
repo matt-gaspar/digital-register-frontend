@@ -6,7 +6,7 @@ import requests
 
 @app.route('/titles/<title_ref>', methods=['GET'])
 def display_title(title_ref):
-    return render_template('display_title.html')
+    return render_template('display_title.html', asset_path = "../static/")
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
