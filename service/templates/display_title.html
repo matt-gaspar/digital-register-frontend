@@ -1,4 +1,33 @@
 {% extends "layout.html" %}
+
 {% block content %}
-  <h1>CONTENT GOES HERE</h1>
+
+<main id="wrapper" role="main">
+    <div id="content">
+      <p>TODO: Beta banner</p>
+      <h2>Title number</h2>
+      <p>{{ title.number }}</p>
+      <h2>Last changed</h2>
+      <p>{{ title.last_changed }}</p>
+      <h2>Address</h2>
+      <p>{{ title.address }}</p>
+      <h2>Latitude</h2>
+      <p>{{ title.coordinates.latitude }}</p>
+      <h2>Longitude</h2>
+      <p>{{ title.coordinates.longitude }}</p>
+      <h2>Proprietor 1 name</h2>
+      <p>{{ title.proprietors[0].name }}</p>
+      <h2>Proprietor 1 address</h2>
+      <p>{{ title.proprietors[0].address }}</p>
+      <h2>Proprietor 2 name</h2>
+      <p>{{ title.proprietors[1].name }}</p>
+      <h2>Proprietor 2 address</h2>
+      <p>{{ title.proprietors[1].address }}</p>
+      <h2>Lender</h2>
+      <p>{{ title.lenders[0].name }}</p>
+      <h2>Tenure type</h2>
+      <p>{{ title.tenure_type }}</p>
+    </div>
+</main>
+
 {% endblock %}
