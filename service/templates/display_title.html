@@ -32,17 +32,9 @@
                     <dl class="definition-tabular">
                         <dt>Owner(s)</dt>
                         <dd>
-                            {% if title.proprietors.count > 1 %}
-                                <ul class="collapse">
-                                {% for proprietor in title.proprietors %}
-                                    <li>
-                                        {{ proprietor.name }}
-                                    </li>
-                                {% endfor %}
-                                </ul>
-                            {% else %}
-                                {{ title.proprietors[0].name }}
-                            {% endif %}
+                        {% for proprietor in title.proprietors %}
+                          <p>{{ proprietor.name }}</p>
+                        {% endfor %}
                         </dd>
 
                         <dt>Lender(s)</dt>
