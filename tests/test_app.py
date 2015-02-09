@@ -44,3 +44,8 @@ class ViewTitleTestCase(unittest.TestCase):
     def test_get_title_page(self, mock_get):
         response = self.app.get('/titles/titleref')
         assert response.status_code == 200
+
+    @mock.patch('requests.get', return_value=fake_title)
+    def test_date_formatting_on_title_page(self, mock_get):
+        response = self.app.get('/titles/titleref')
+        self.assertTrue(str('22 May 2014 at 15:39:52') in str(response.data))
