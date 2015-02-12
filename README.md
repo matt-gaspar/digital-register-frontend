@@ -1,4 +1,7 @@
 # digital-register-frontend
+
+[![Build Status](http://54.72.23.130/job/digital-register-frontend-unit-tests/badge/icon)](http://54.72.23.130/job/digital-register-frontend-unit-tests/)
+
 This is repo for the frontend of the digital register service
 ## Setup
 
