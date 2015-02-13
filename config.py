@@ -2,7 +2,7 @@ import os
 
 class Config(object):
     DEBUG = False
-    REGISTER_TITLE_API='http://landregistry.local:8003/'
+    REGISTER_TITLE_API='http://landregistry.local:8004/'
 
 class DevelopmentConfig(Config):
     DEBUG = True

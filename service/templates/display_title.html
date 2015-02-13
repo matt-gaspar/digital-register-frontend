@@ -14,7 +14,7 @@
                         Register of title <span class="title-flag">{{ title.number }}</span>
                     </h1>
                     <p>
-                        This register was last changed on <b>{{ title.last_changed | datetime }}</b>
+                        This register was last changed on <b>{{ title.last_changed }}</b>
                     </p>
 
                     <div class="lede">
@@ -32,8 +32,8 @@
                     <dl class="definition-tabular">
                         <dt>Owner(s)</dt>
                         <dd>
-                        {% for proprietor in title.proprietors %}
-                          <p>{{ proprietor.name }}</p>
+                        {% for proprietor in proprietors %}
+                          <p>{{ proprietor }}</p>
                         {% endfor %}
                         </dd>
 
