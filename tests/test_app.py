@@ -7,33 +7,10 @@ import responses
 
 from .fake_response import FakeResponse
 
-fake_title = FakeResponse(b'''{
-    "address": "5 Granary Avenue Poundbury Dorchester DT1 4YY",
-    "coordinates": {
-        "latitude": 45,
-        "longitude": 45
-    },
-    "last_changed": "2014-05-22 15:39:52",
-    "lenders": [
-        {
-        "name": "Santander"
-        }
-    ],
-    "number": "DT122047",
-    "proprietors": [
-        {
-        "address": "5 Granary Avenue Poundbury Dorchester DT1 4YY",
-        "name": "Raymond Frank Easton"
-        },
-        {
-        "address": "5 Granary Avenue Poundbury Dorchester DT1 4YY",
-        "name": "Carol Easton"
-        }
-    ],
-    "tenure_type": "Leasehold"
-    }'''
-)
-
+fake_title_json_file = open('tests/fake_title.json', 'r')
+fake_title_json_string = fake_title_json_file.read()
+fake_title_bytes = str.encode(fake_title_json_string)
+fake_title = FakeResponse(fake_title_bytes)
 
 class ViewTitleTestCase(unittest.TestCase):
 
@@ -48,4 +25,11 @@ class ViewTitleTestCase(unittest.TestCase):
     @mock.patch('requests.get', return_value=fake_title)
     def test_date_formatting_on_title_page(self, mock_get):
         response = self.app.get('/titles/titleref')
-        self.assertTrue(str('22 May 2014 at 15:39:52') in str(response.data))
+        self.assertTrue(str('28 Aug 2014 at 12:37:13') in str(response.data))
+
+    @mock.patch('requests.get', return_value=fake_title)
+    def test_address_on_title_page(self, mock_get):
+        response = self.app.get('/titles/titleref')
+        self.assertTrue(str('17 Hazelbury Crescent') in str(response.data))
+        self.assertTrue(str('Luton') in str(response.data))
+        self.assertTrue(str('LU1 1DZ') in str(response.data))
