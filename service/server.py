@@ -13,33 +13,41 @@ def get_register_title(title_ref):
 def display_title(title_ref):
     api_response = get_register_title(title_ref)
     title_api = api_response.json()
-    title = {
-        'number': title_api['title_number'],
-        'last_changed': title_api['data']['last_app_timestamp'],
-        'address': 'TODO Address',
-        'lenders': [
-            {'name': 'TODO lender name'},
-        ],
-    }
     entries = title_api['data']['entries']
-    proprietor_names = []
-    first_line_address = []
+    property_description = {}
     for entry in entries:
-        if entry['role_code'] == 'RPRO':
-            infills = entry['infills']
-            for infill in infills:
-                proprietors = infill['proprietors']
-                for proprietor in proprietors:
-                    proprietor_names += [proprietor['name']['forename'] + ' ' + proprietor['name']['surname']]
+        #TODO: story US25
+        #if entry['role_code'] == 'RPRO':
+        #    infills = entry['infills']
+        #        for infill in infills:
+                #Get the infill of type address
+        #        proprietors = infill['proprietors']
+        #        for proprietor in prosprietors:
+        #            proprietor_names += [proprietor['name']['forename'] + ' ' + proprietor['name']['surname']]
         if entry['role_code'] == 'RDES':
             infills = entry['infills']
             for infill in infills:
                 address_part = infill['address']
-                first_line_address.append(address_part['house_no'] + ' ' + address_part['street_name'])
-                property_description = {'first_line_address': first_line_address, 'town': address_part['town'], 'postcode': address_part['postcode'] }
+                if address_part:
+                  first_line_address = address_part['house_no'] + ' ' + address_part['street_name']
+                  property_description = {
+                    'first_line': first_line_address,
+                    'town': address_part['town'],
+                    'postcode': address_part['postcode']
+                  }
+    title = {
+        'number': title_api['title_number'],
+        'last_changed': title_api['data']['last_app_timestamp'],
+        'address': property_description,
+        'lenders': [
+            {'name': 'TODO lender name'},
+        ],
+        'proprietors': [
+            {'name': 'TODO proprietor name'},
+        ]
+    }
 
-    return render_template('display_title.html', asset_path = '../static/',
-                           title=title, proprietors=proprietor_names, property_description=property_description)
+    return render_template('display_title.html', asset_path = '../static/', title=title)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
