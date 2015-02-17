@@ -20,9 +20,11 @@
                     <div class="lede">
 
                         <div class="grid grid-1-3">
-                            {{ title.address.first_line }}<br>
-                            {{ title.address.town }}<br>
-                            {{ title.address.postcode }}
+                            {% if title.address_lines %}
+                              {{ '<br>'.join(title.address_lines)|safe }}
+                            {% else %}
+                              Not Available
+                            {% endif %}
                         </div>
 
                         <figure class="grid grid-1-3">
