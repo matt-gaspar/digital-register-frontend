@@ -56,7 +56,8 @@ def display_title(title_ref):
             'lenders': [
                 {'name': 'TODO lender name'},
             ],
-            'proprietors': proprietor_names
+            'proprietors': proprietor_names,
+            'tenure': title_api['data']['tenure']
         }
 
         return render_template('display_title.html', asset_path = '../static/', title=title)
