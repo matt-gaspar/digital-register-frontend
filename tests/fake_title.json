@@ -1,325 +1,349 @@
 {
     "data":{
-        "application_reference":"EXAMPLE_application_reference",
-        "class":"EXAMPLE_class",
-        "districts":[
-
-        ],
-        "dlr":"EXAMPLE_dlr",
-        "edition_date":"EXAMPLE_edition_date",
-        "entries":[
+        "application_reference": "MA2784E",
+        "groups": [
             {
-                "entry_id":"2014-08-28 11:46:03.595170",
-                "sub_register":"A",
-                "status":"Current",
-                "role_code":"RDES",
-                "language":"en_GB",
-                "infills":[
+                "category": "PROPERTY",
+                "entries": [
                     {
-                        "address":{
-                            "postcode":"LU1 1DZ",
-                            "town":"Luton",
-                            "address_string":"17 Hazelbury Crescent, Luton (LU1 1DZ)",
-                            "house_no":"17",
-                            "street_name":"Hazelbury Crescent"
+                        "entry_id": "2014-05-22 15:39:52.527610",
+                        "sub_register": "A",
+                        "status": "Current",
+                        "sequence_number": 1,
+                        "role_code": "RDES",
+                        "language": "ENG",
+                        "category": "PROPERTY",
+                        "infills": [
+                            {
+                                "address": {
+                                    "postcode": "LU1 1DZ",
+                                    "town": "Luton",
+                                    "address_string": "17 Hazelbury Crescent, Luton (LU1 1DZ)",
+                                    "house_no": "17",
+                                    "street_name": "Hazelbury Crescent"
+                                },
+                                "type": "Address"
+                            }
+                        ],
+                        "full_text": "The Freehold land shown edged with red on the plan of the above title filed at the Registry and being 17 Kenilworth Road, Luton (LU1 1DQ).",
+                        "entry_date": "2014-05-22",
+                        "template_text": "The Freehold land shown edged with red on the plan of the above title filed at the Registry and being *AD*"
+                    }
+                ]
+            },
+            {
+                "category": "OWNERSHIP",
+                "entries": [
+                    {
+                        "entry_id": "2014-05-22 15:39:32.607710",
+                        "sub_register": "B",
+                        "status": "Current",
+                        "sequence_number": 1,
+                        "role_code": "RPRO",
+                        "language": "ENG",
+                        "category": "OWNERSHIP",
+                        "infills": [
+                            {
+                                "proprietors": [
+                                    {
+                                        "addresses": [
+                                            {
+                                                "postcode": "LU1 1DQ",
+                                                "town": "Luton",
+                                                "address_string": "17 Kenilworth Road, Luton LU1 1DQ",
+                                                "house_no": "17",
+                                                "address_type": "UK",
+                                                "street_name": "Kenilworth Road"
+                                            }
+                                        ],
+                                        "name": {
+                                            "surname": "Oakes",
+                                            "forename": "Scott",
+                                            "name_category": "PRIVATE INDIVIDUAL"
+                                        }
+                                    }
+                                ],
+                                "type": "Proprietor"
+                            }
+                        ],
+                        "full_text": "PROPRIETOR: %SCOTT OAKES% of 17 Kenilworth Road, *Luton* LU1 1DQ.",
+                        "entry_date": "2014-05-22",
+                        "template_text": "PROPRIETOR: *RP*"
+                    },
+                    {
+                        "entry_id": "2014-05-22 15:38:01.287620",
+                        "sub_register": "B",
+                        "status": "Current",
+                        "sequence_number": 2,
+                        "role_code": "RPPD",
+                        "draft_entry_version": 1,
+                        "language": "ENG",
+                        "category": "OWNERSHIP",
+                        "infills": [
+                            {
+                                "text": "01/05/2014",
+                                "date": "2014-05-01",
+                                "type": "DATE"
+                            },
+                            {
+                                "text": "£100,000",
+                                "type": "PRICE"
+                            }
+                        ],
+                        "full_text": "The price stated to have been paid on 1 May 2014 was £100,000.",
+                        "entry_date": "2014-05-22",
+                        "template_text": "The price stated to have been paid on *DA* was *AM*.",
+                        "draft_entry_code": "BK688"
+                    }
+                ]
+            }
+        ],
+        "geometry": {
+            "map": {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        508295.35,
+                                        221829.85
+                                    ],
+                                    [
+                                        508297.05,
+                                        221827.2
+                                    ],
+                                    [
+                                        508298.06,
+                                        221827.83
+                                    ],
+                                    [
+                                        508296.27,
+                                        221830.43
+                                    ],
+                                    [
+                                        508295.35,
+                                        221829.85
+                                    ]
+                                ]
+                            ]
                         },
-                        "type":"Address"
-                    }
-                ],
-                "full_text":"The Freehold land shown edged with red on the plan of the above title filed at the Registry and being 17 Hazelbury Crescent, Luton (LU1 1DZ).",
-                "entry_date":"2014-08-28",
-                "template_text":"The Freehold land shown edged with red on the plan of the above title filed at the Registry and being *AD*"
-            },
-            {
-                "entry_id":"2014-08-28 11:46:02.552680",
-                "sub_register":"B",
-                "status":"Current",
-                "role_code":"RPRO",
-                "language":"en_GB",
-                "infills":[
-                    {
-                        "proprietors":[
-                            {
-                                "addresses":[
-                                    {
-                                        "postcode":"PL5 5DD",
-                                        "town":"Plymouth",
-                                        "address_string":"Flower Cottage, Notte Street, Plymouth PL5 5DD",
-                                        "address_type":"UK",
-                                        "street_name":"Notte Street",
-                                        "house_description":"Flower Cottage"
-                                    }
-                                ],
-                                "name":{
-                                    "surname":"Doe",
-                                    "forename":"Jane",
-                                    "name_category":"PRIVATE INDIVIDUAL"
-                                }
+                        "properties": {
+                            "graphic_type": "Polygon",
+                            "feature_id": 20054,
+                            "render_attributes": {
+                                "render_level": "-1"
                             }
-                        ],
-                        "type":"Proprietor"
+                        }
                     }
                 ],
-                "full_text":"PROPRIETOR: jane doe of Flower Cottage, Notte Street, *Plymouth* PL5 5DD.",
-                "entry_date":"2014-08-28",
-                "template_text":"PROPRIETOR: *RP*"
+                "properties": {
+                    "orientation_code": "P",
+                    "print_size": "A4",
+                    "scale": "1250 ",
+                    "map_reference": "TL0821NW",
+                    "stamp_code_1": " ",
+                    "stamp_code_2": " ",
+                    "stamp_code_3": " ",
+                    "stamp_code_4": " ",
+                    "stamp_code_5": " ",
+                    "stamp_text_1": " ",
+                    "stamp_text_2": " ",
+                    "stamp_text_3": " ",
+                    "stamp_text_4": " ",
+                    "stamp_text_5": " "
+                },
+                "crs": {
+                    "type": "name",
+                    "properties": {
+                        "name": "urn:ogc:def:crs:EPSG::27700"
+                    }
+                }
             },
-            {
-                "entry_id":"2014-08-28 11:40:17.186710",
-                "sub_register":"B",
-                "status":"Current",
-                "draft_entry_version":1,
-                "role_code":"RPPD",
-                "language":"en_GB",
-                "infills":[
-                    {
-                        "text":"30/06/2014",
-                        "date":"2014-06-30",
-                        "type":"DATE"
-                    },
-                    {
-                        "text":"£225,000",
-                        "type":"PRICE"
+            "extent": {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                508237.45,
+                                221796.7
+                            ],
+                            [
+                                508236.7,
+                                221797.75
+                            ],
+                            [
+                                508238.19,
+                                221798.76
+                            ],
+                            [
+                                508231.75,
+                                221805.4
+                            ],
+                            [
+                                508225.4,
+                                221812
+                            ],
+                            [
+                                508221.6,
+                                221815.85
+                            ],
+                            [
+                                508219.2,
+                                221813.35
+                            ],
+                            [
+                                508217.2,
+                                221815.3
+                            ],
+                            [
+                                508214.01,
+                                221811.7
+                            ],
+                            [
+                                508215.92,
+                                221809.92
+                            ],
+                            [
+                                508227.88,
+                                221798.82
+                            ],
+                            [
+                                508233.35,
+                                221793.75
+                            ],
+                            [
+                                508237.45,
+                                221796.7
+                            ]
+                        ]
+                    ]
+                },
+                "properties": {
+                    "graphic_type": "Bordered Polygon",
+                    "feature_id": 4013,
+                    "colour": 17,
+                    "width": 1000,
+                    "render_attributes": {
+                        "border_colour": 17,
+                        "border_width": 1000,
+                        "exterior_edge_colour": 17,
+                        "exterior_edge_thickness": 1,
+                        "exterior_edge_thickness_units": "Pixels",
+                        "fill_colour": 28,
+                        "fill_style": 0,
+                        "render_level": "0"
                     }
-                ],
-                "full_text":"The value stated as at 30 June 2014 was £225,000.",
-                "entry_date":"2014-08-28",
-                "template_text":"The value stated as at *DA* was *AM*.",
-                "draft_entry_code":"BK483"
+                },
+                "crs": {
+                    "type": "name",
+                    "properties": {
+                        "name": "urn:ogc:def:crs:EPSG::27700"
+                    }
+                }
             },
-            {
-                "entry_id":"2014-08-28 11:39:07.553290",
-                "sub_register":"B",
-                "status":"Current",
-                "draft_entry_version":1,
-                "role_code":"CBCR",
-                "language":"en_GB",
-                "infills":[
-                    {
-                        "text":"30/06/2014",
-                        "date":"2014-06-30",
-                        "type":"DATE"
-                    },
-                    {
-                        "text":"Preferred Mortgages Limited"
+            "index": {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                508225.4,
+                                221812
+                            ],
+                            [
+                                508221.6,
+                                221815.85
+                            ],
+                            [
+                                508219.2,
+                                221813.35
+                            ],
+                            [
+                                508217.2,
+                                221815.3
+                            ],
+                            [
+                                508214.01,
+                                221811.7
+                            ],
+                            [
+                                508215.92,
+                                221809.92
+                            ],
+                            [
+                                508227.88,
+                                221798.82
+                            ],
+                            [
+                                508233.35,
+                                221793.75
+                            ],
+                            [
+                                508237.45,
+                                221796.7
+                            ],
+                            [
+                                508236.7,
+                                221797.75
+                            ],
+                            [
+                                508238.19,
+                                221798.76
+                            ],
+                            [
+                                508231.75,
+                                221805.4
+                            ],
+                            [
+                                508225.4,
+                                221812
+                            ]
+                        ]
+                    ]
+                },
+                "properties": {
+                    "graphic_type": "Bordered Polygon",
+                    "feature_id": 4019,
+                    "colour": 25,
+                    "width": 0,
+                    "render_attributes": {
+                        "border_colour": 25,
+                        "border_width": 0,
+                        "exterior_edge_colour": 1,
+                        "exterior_edge_thickness": 2,
+                        "exterior_edge_thickness_units": "Pixels",
+                        "fill_colour": 25,
+                        "fill_style": 9,
+                        "render_level": "0"
                     }
-                ],
-                "full_text":"RESTRICTION...",
-                "entry_date":"2014-08-28",
-                "template_text":"RESTRICTION...",
-                "draft_entry_code":"BX102"
-            },
-            {
-                "entry_id":"2014-08-28 11:41:48.170850",
-                "sub_register":"C",
-                "deeds":[
-                    {
-                        "date":"2000-02-01",
-                        "parties":[
-                            {
-                                "names":[
-                                    {
-                                        "surname":"Doe",
-                                        "forename":"Jane",
-                                        "name_category":"UNKNOWN"
-                                    }
-                                ],
-                                "party_role_description":"Vendor"
-                            },
-                            {
-                                "names":[
-                                    {
-                                        "surname":"Doe",
-                                        "forename":"John",
-                                        "name_category":"UNKNOWN"
-                                    }
-                                ],
-                                "party_role_description":"Purchaser"
-                            }
-                        ],
-                        "description":"Transfer"
+                },
+                "crs": {
+                    "type": "name",
+                    "properties": {
+                        "name": "urn:ogc:def:crs:EPSG::27700"
                     }
-                ],
-                "status":"Current",
-                "draft_entry_version":2,
-                "role_code":"DCEA",
-                "language":"en_GB",
-                "infills":[
-                    {
-                        "text":"tinted blue",
-                        "type":"EXTENT"
-                    },
-                    {
-                        "text":"reserved by"
-                    },
-                    {
-                        "text":"of the land in this title and other land",
-                        "type":"EXTENT"
-                    }
-                ],
-                "full_text":"The land tinted blue is subject to the rights reserved by a Transfer of the land in this title and other land dated 1 February 2000 made between (1) Jane Doe (Vendor) and (2) Rita Ora (Purchaser).\r\r¬NOTE: Copy filed.",
-                "entry_date":"2014-08-28",
-                "notes":[
-                    {
-                        "text":"Copy filed",
-                        "font":"I"
-                    }
-                ],
-                "template_text":"The land *E<>E* is subject to the rights *M<>M* a *DT**DE* dated *DD*",
-                "draft_entry_code":"CF664"
-            },
-            {
-                "entry_id":"2014-08-28 11:39:07.288590",
-                "sub_register":"C",
-                "status":"Current",
-                "draft_entry_version":1,
-                "role_code":"CCHA",
-                "language":"en_GB",
-                "infills":[
-                    {
-                        "text":"30/06/2014",
-                        "date":"2014-06-30",
-                        "type":"DATE"
-                    }
-                ],
-                "full_text":"REGISTERED CHARGE dated 30 June 2014.",
-                "entry_date":"2014-08-28",
-                "template_text":"REGISTERED CHARGE dated *CD*.",
-                "draft_entry_code":"CD100"
-            },
-            {
-                "entry_id":"2014-08-28 11:39:07.536720",
-                "sub_register":"C",
-                "status":"Current",
-                "draft_entry_version":2,
-                "role_code":"CCHR",
-                "language":"en_GB",
-                "infills":[
-                    {
-                        "proprietors":[
-                            {
-                                "addresses":[
-                                    {
-                                        "address_string":"Deeds Admin Team, St. Johns Place, Easton Street, High Wycombe, Bucks HP11 1NL",
-                                        "address_type":"UK"
-                                    }
-                                ],
-                                "name":{
-                                    "non_private_individual_name":"Preferred Mortgages Limited"
-                                }
-                            },
-                            {
-                                "addresses":[
-                                    {
-                                        "email_address":"DeedsAdmin@capstonemortgageservices.co.uk",
-                                        "address_type":"ELECTRONIC"
-                                    }
-                                ],
-                                "name":{
-                                    "non_private_individual_name":"Preferred Mortgages Limited"
-                                }
-                            }
-                        ],
-                        "type":"Charge Proprietor"
-                    }
-                ],
-                "full_text":"Proprietor: #PREFERRED MORTGAGES LIMITED#",
-                "entry_date":"2014-08-28",
-                "template_text":"Proprietor: #PREFERRED MORTGAGES LIMITED#",
-                "draft_entry_code":"CY816"
+                }
             }
+        },
+        "filed_plan_format": "VECTOR",
+        "edition_date": "2014-05-22",
+        "last_app_timestamp": "2014-08-28T12:37:13+01:00",
+        "class": "Absolute",
+        "tenure": "Freehold",
+        "uprns": [
+            1068558627
         ],
-        "filed_plan_format":"EXAMPLE_filed_plan_format",
-        "last_app_timestamp":"2014-08-28T12:37:13+01:00",
-        "migration_errors":[
-
-        ],
-        "raster_plan_quality":"EXAMPLE_raster_plan_quality",
-        "tenure":"EXAMPLE_tenure",
-        "title_number":"EXAMPLE_title_number",
-        "uprns":[
-
+        "title_number": "DN1000",
+        "dlr": "Peterborough Office",
+        "districts": [
+            "LUTON"
         ]
-    },
-    "geometry_data":{
-        "extent":{
-            "crs":{
-                "properties":{
-                    "name":"urn:ogc:def:crs:EPSG::27700"
-                },
-                "type":"name"
-            },
-            "geometry":{
-                "coordinates":[
-                    0,
-                    0
-                ],
-                "type":"Point"
-            },
-            "properties":{
-
-            },
-            "type":"Feature"
-        },
-        "index":{
-            "crs":{
-                "properties":{
-                    "name":"urn:ogc:def:crs:EPSG::27700"
-                },
-                "type":"name"
-            },
-            "geometry":{
-                "coordinates":[
-                    0,
-                    0
-                ],
-                "type":"Point"
-            },
-            "properties":{
-
-            },
-            "type":"Feature"
-        },
-        "map":{
-            "crs":{
-                "properties":{
-                    "name":"urn:ogc:def:crs:EPSG::27700"
-                },
-                "type":"name"
-            },
-            "geometry":{
-                "coordinates":[
-                    0,
-                    0
-                ],
-                "type":"Point"
-            },
-            "properties":{
-
-            },
-            "type":"Feature"
-        },
-        "references":[
-            {
-                "crs":{
-                    "properties":{
-                        "name":"urn:ogc:def:crs:EPSG::27700"
-                    },
-                    "type":"name"
-                },
-                "geometry":{
-                    "coordinates":[
-                        0,
-                        0
-                    ],
-                    "type":"Point"
-                },
-                "properties":{
-
-                },
-                "type":"Feature"
-            }
-        ]
-    },
-    "title_number":"DN1000"
+    }
 }
