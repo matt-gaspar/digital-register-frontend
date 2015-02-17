@@ -12,41 +12,51 @@ def get_register_title(title_ref):
 
 @app.route('/titles/<title_ref>', methods=['GET'])
 def display_title(title_ref):
+    #TODO Refactoring is needed, as well commenting on the code.
     api_response = get_register_title(title_ref)
     if api_response:
         title_api = api_response.json()
-        entries = title_api['data']['entries']
-        property_description = {}
-        for entry in entries:
-            #TODO: story US25
-            #if entry['role_code'] == 'RPRO':
-            #    infills = entry['infills']
-            #        for infill in infills:
-                    #Get the infill of type address
-            #        proprietors = infill['proprietors']
-            #        for proprietor in prosprietors:
-            #            proprietor_names += [proprietor['name']['forename'] + ' ' + proprietor['name']['surname']]
-            if entry['role_code'] == 'RDES':
-                infills = entry['infills']
-                for infill in infills:
-                    address_part = infill['address']
-                    if address_part:
-                        first_line_address = address_part['house_no'] + ' ' + address_part['street_name']
-                        property_description = {
-                            'first_line': first_line_address,
-                            'town': address_part['town'],
-                            'postcode': address_part['postcode']
-                        }
+        entry_groups = title_api['data']['groups']
+        #This is to get the proprietor entry that is in the ownership category
+        proprietor_names = []
+        for entry_group in entry_groups:
+            if entry_group['category'] == 'OWNERSHIP':
+                proprietor_entries = (entry_group['entries'])
+                for entry in proprietor_entries:
+                    if entry['role_code'] == 'RPRO':
+                        infills = entry['infills']
+                        for infill in infills:
+                            proprietors = infill['proprietors']
+                            for proprietor in proprietors:
+                                proprietor_names += [
+                                  {
+                                    'name': proprietor['name']['forename'] + ' ' + proprietor['name']['surname']
+                                  }
+                                ]
+            #This is to get the proprietor entry that is in the ownership category
+            if entry_group['category'] == 'PROPERTY':
+                property_entries = (entry_group['entries'])
+                property_description = {}
+                for entry in property_entries:
+                    if entry['role_code'] == 'RDES':
+                        infills = entry['infills']
+                        for infill in infills:
+                            address_part = infill['address']
+                            if address_part:
+                                first_line_address = address_part['house_no'] + ' ' + address_part['street_name']
+                                property_description = {
+                                    'first_line': first_line_address,
+                                    'town': address_part['town'],
+                                    'postcode': address_part['postcode']
+                                }
         title = {
-            'number': title_api['title_number'],
+            'number': title_api['data']['title_number'],
             'last_changed': title_api['data']['last_app_timestamp'],
             'address': property_description,
             'lenders': [
                 {'name': 'TODO lender name'},
             ],
-            'proprietors': [
-                {'name': 'TODO proprietor name'},
-            ]
+            'proprietors': proprietor_names
         }
 
         return render_template('display_title.html', asset_path = '../static/', title=title)
