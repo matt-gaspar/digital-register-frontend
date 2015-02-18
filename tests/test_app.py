@@ -7,7 +7,7 @@ import responses
 
 from .fake_response import FakeResponse
 
-with open('tests/fake_title.json', 'r') as fake_title_json_file
+with open('tests/fake_title.json', 'r') as fake_title_json_file:
     fake_title_json_string = fake_title_json_file.read()
     fake_title_bytes = str.encode(fake_title_json_string)
     fake_title = FakeResponse(fake_title_bytes)
