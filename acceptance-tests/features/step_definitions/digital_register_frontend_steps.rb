@@ -110,5 +110,5 @@ end
 
 Then(/^I see the date at which the title was last changed$/) do
   content = page.body.text
-  expect(content).to include("28 Jan 2014 at 12:38:58")
+  expect(content).to include("28 January 2014 at 12:38:58")
 end
