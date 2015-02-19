@@ -10,6 +10,7 @@ def get_register_title(title_ref):
     response = requests.get(register_title_api+'titles/'+title_ref)
     return response
 
+#This method gets all the infills of a particular entry that has been found.
 def get_register_entry_infills(category, role_code, entry_groups):
     for entry_group in entry_groups:
         if entry_group['category'] == category:
@@ -19,6 +20,9 @@ def get_register_entry_infills(category, role_code, entry_groups):
                     infills = entry['infills']
                     return infills
 
+#It is currently assumed that there will only be one proprieter register entry
+#This method grabs the correct entry using the OWNERSHIP category and
+#role code of RPRO
 def get_proprietor_register_entry(entry_groups):
     proprietor_names = []
     category = 'OWNERSHIP'
@@ -34,6 +38,9 @@ def get_proprietor_register_entry(entry_groups):
             ]
     return proprietor_names
 
+#It is currently assumed that there will only be one property address register
+#entry this method grabs the correct entry using the PROPERTY category and
+#role code of RDES
 def get_property_address_register_entry(entry_groups):
     address_lines = []
     category = 'PROPERTY'
