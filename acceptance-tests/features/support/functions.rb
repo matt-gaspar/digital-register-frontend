@@ -10,6 +10,7 @@ def create_proprietor_title_in_db(title_data)
   name_category = title_data[:name_category]
   full_text = title_data[:full_text]
   multi_proprietors = title_data[:multi_proprietors]
+  last_app_timestamp = title_data[:last_app_timestamp]
   if multi_proprietors == 'TwoPI'
     multiple_proprietors_json = ",{
     \"addresses\": [
@@ -143,7 +144,7 @@ INSERT INTO "title_register_data" ("title_number", "register_data", "geometry_da
                   ]
               }
           ],
-          "last_app_timestamp": "2014-08-28T12:37:13+01:00",
+          "last_app_timestamp": "#{last_app_timestamp}",
           "tenure": "Freehold",
           "title_number": "DN1000",
           "uprns": [
