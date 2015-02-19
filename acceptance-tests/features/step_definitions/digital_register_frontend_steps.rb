@@ -20,6 +20,7 @@ Given(/^I have a property$/) do
     :forename => "Hill",
     :name_category => "Personal",
     :full_text => "PROPRIETOR: %MARIE HILL% of Flat 113, Eaton Rise, Eton College Road, *London* NW3 2DD.",
+    :last_app_timestamp => "2014-01-28T12:38:58+01:00"
   }
   create_proprietor_title_in_db(@property_hash)
 end
@@ -105,4 +106,9 @@ Then(/^I can see all the owners the property$/) do
   #expect(content).to include("#{@property_hash[:forename2]} #{@property_hash[:surname2]}")
   #expect(content).to include("#{@property_hash[:forename3]} #{@property_hash[:surname3]}")
   #expect(content).to include("#{@property_hash[:forename4]} #{@property_hash[:surname4]}")
+end
+
+Then(/^I see the date at which the title was last changed$/) do
+  content = page.body.text
+  expect(content).to include("28 Jan 2014 at 12:38:58")
 end
