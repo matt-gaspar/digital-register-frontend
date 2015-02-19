@@ -22,8 +22,6 @@ with open('tests/fake_partial_address.json', 'r') as fake_partial_address_file:
     fake_partial_address_bytes = str.encode(fake_partial_address_json_string)
     fake_partial_address = FakeResponse(fake_partial_address_bytes)
 
-
-
 class ViewTitleTestCase(unittest.TestCase):
 
     def setUp(self):
