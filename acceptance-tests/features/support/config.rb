@@ -2,6 +2,7 @@ require 'net/https'
 require 'capybara/cucumber'
 require 'pg'
 require 'rspec/expectations'
+require 'cucumber-repeat'
 
 ### Allows you to use the page. commands
 include Capybara::DSL
