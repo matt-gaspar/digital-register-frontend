@@ -118,12 +118,7 @@ end
 
 
 #start of sprint three changes dog 24/2
-=begin
 Given(/^I am an initial private beta user$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^I have logged in$/) do
   pending # express the regexp above with the code you wish you had
 end
 
@@ -136,10 +131,6 @@ When(/^I view the register details page$/) do
 end
 
 Then(/^I can view the register details for the selected title$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^I am logged in$/) do
   pending # express the regexp above with the code you wish you had
 end
 
@@ -167,7 +158,4 @@ When(/^I view the register detail page$/) do
   pending # express the regexp above with the code you wish you had
 end
 
-
-
-=end
 #end of sprint three changes
