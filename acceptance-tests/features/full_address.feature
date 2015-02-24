@@ -7,16 +7,16 @@ Feature: US033 View full address in summary box in digital register
 
 @US033  @ViewFullAddress @DigitalRegistry
 Scenario: Full address on property title
-  Given I am a citizen
+  Given I am an initial private beta user
   And I have logged in
-  And I have a property
-  When I view the property detail page
-  Then I see the full address of the property
+  And I have a title
+  When I view the register details page
+  Then I see the full address for the selected title
 
 @US033 @No_Address_Data @DigitalRegistry
 Scenario: No property title available
-  Given I am a citizen
+  Given I am an initial private beta user
   And I have logged in
-  And I do not have a property
-  When I view the property detail page
+  And I do not have a title
+  When I view the register details page
   Then I get a page not found message

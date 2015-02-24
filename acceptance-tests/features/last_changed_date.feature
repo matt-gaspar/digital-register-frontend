@@ -5,8 +5,8 @@ Feature: US027 Last Changed Date
 
 @US027 @DigitalRegistry
 Scenario: Last changed date
-  Given I am a citizen
+  Given I am an initial private beta user
   And I have logged in
-  And I have a property
-  When I view the property detail page
+  And I have a title
+  When I view the register details page
   Then I see the date at which the title was last changed
