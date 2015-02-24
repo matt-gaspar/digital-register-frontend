@@ -112,3 +112,50 @@ Then(/^I see the date at which the title was last changed$/) do
   content = page.body.text
   expect(content).to include("28 January 2014 at 12:38:58")
 end
+
+
+
+
+
+#start of sprint three changes dog 24/2
+Given(/^I am an initial private beta user$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^I have a title with a non private individual owner$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+When(/^I view the register details page$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^I can view the register details for the selected title$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^I have a title with a charity with trustees that are private individuals$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^I cannot view the property owner details for the selected title$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^a message is displayed instead of the property owner details$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^I have a title with a charity with trustees that are non private individual owners$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Given(/^I have a title with a private individual owner \{this means on SOR\}$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+When(/^I view the register detail page$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+#end of sprint three changes
