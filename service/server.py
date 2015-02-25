@@ -6,6 +6,13 @@ import requests
 
 register_title_api = app.config['REGISTER_TITLE_API']
 
+#This method attempts to retrieve the index polygon data for the entry
+def get_property_address_index_polygon(geometry_data):
+    indexPolygon = None
+    if geometry_data and ('geometry' in geometry_data) and ('index' in geometry_data['geometry']):
+        indexPolygon = geometry_data['geometry']['index']
+    return indexPolygon
+
 @app.route('/titles/<title_ref>', methods=['GET'])
 def display_title(title_ref):
     api_response = get_register_title(title_ref)
@@ -13,6 +20,7 @@ def display_title(title_ref):
         title_api = api_response.json()
         proprietor_names = get_proprietor_names(title_api['data']['proprietors'])
         address_lines = get_address_lines(title_api['data']['address'])
+        indexPolygon = get_property_address_index_polygon(title_api['geometry_data'])
         title = {
             #ASSUMPTION 1: All titles have a title number
             'number': title_api['title_number'],
@@ -20,6 +28,7 @@ def display_title(title_ref):
             'address_lines': address_lines,
             'proprietors': proprietor_names,
             'tenure': title_api['data'].get('tenure', 'No data')
+            'indexPolygon': indexPolygon
         }
         return render_template('display_title.html', asset_path = '../static/', title=title)
     else:

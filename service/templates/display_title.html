@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "imports.html" %}
 
 {% block content %}
 
@@ -89,6 +89,12 @@
 
     </div><!-- end content -->
 </main>
-<script src="{{asset_path}}javascripts/map.js"></script>
 
+{% endblock %}
+
+{% block js_additionals %}
+<script type='text/javascript'>
+    var indexData = {{ title.indexPolygon | tojson }}
+</script>
+<script src="{{asset_path}}javascripts/map.js"></script>
 {% endblock %}
