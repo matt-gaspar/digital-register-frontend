@@ -31,11 +31,15 @@ def get_proprietor_register_entry(entry_groups):
     for infill in infills:
         proprietors = infill['proprietors']
         for proprietor in proprietors:
-            proprietor_names += [
-              {
-                'name': proprietor['name']['forename'] + ' ' + proprietor['name']['surname']
-              }
-            ]
+            name = proprietor['name']
+            if 'forename' in name and 'surname' in name:
+                proprietor_names += [{
+                    "name": name['forename'] + ' ' + name['surname']
+                }]
+            if 'non_private_individual_name' in name:
+                proprietor_names += [{
+                    "name": name['non_private_individual_name']
+                }]
     return proprietor_names
 
 #It is currently assumed that there will only be one property address register
