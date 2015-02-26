@@ -1,1 +1,1 @@
-export SETTINGS='config.DevelopmentConfig'
+export SETTINGS='dev'
