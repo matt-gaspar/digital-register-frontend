@@ -1,11 +1,14 @@
 import os
 
-class Config(object):
-    DEBUG = False
-    REGISTER_TITLE_API='http://landregistry.local:8004/'
+CONFIG_DICT = {
+    'DEBUG': False,
+    'REGISTER_TITLE_API': 'http://landregistry.local:8004/',
+}
 
-class DevelopmentConfig(Config):
-    DEBUG = True
+settings = os.environ.get('SETTINGS')
 
-class TestConfig(DevelopmentConfig):
-    TESTING = True
+if settings == 'dev':
+    CONFIG_DICT['DEBUG'] = True
+elif settings == 'test':
+    CONFIG_DICT['DEBUG'] = True
+    CONFIG_DICT['TESTING'] = True
