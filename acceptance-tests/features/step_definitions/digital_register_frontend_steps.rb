@@ -80,29 +80,29 @@ end
 Given(/^I have a title with a non private individual owner$/) do
   # empty the database
   delete_all_titles
-  title_number = insert_property_non_private_individual_owner
-  @property_hash = {:title_number => title_number}
+  title = insert_property_non_private_individual_owner
+  @property_hash = title
 end
 
 Given(/^I have a title with a charity with trustees that are private individuals$/) do
   # empty the database
   delete_all_titles
-  title_number = insert_property_charity_private_individual_owner
-  @property_hash = {:title_number => title_number}
+  title = insert_property_charity_private_individual_owner
+  @property_hash = title
 end
 
 Given(/^I have a title with a charity with trustees that are non private individual owners$/) do
   # empty the database
   delete_all_titles
-  title_number = insert_property_charity_non_private_individual_owner
-  @property_hash = {:title_number => title_number}
+  title = insert_property_charity_non_private_individual_owner
+  @property_hash = title
 end
 
 Given(/^I have a title with a private individual owner$/) do
   # empty the database
   delete_all_titles
-  title_number = insert_property_private_individual_owner
-  @property_hash = {:title_number => title_number}
+  title = insert_property_private_individual_owner
+  @property_hash = title
 end
 
 ##
@@ -150,5 +150,11 @@ end
 Then(/^I can view the register details for the selected title$/) do
   content = page.body.text
   expect(content).to include(@property_hash[:title_number])
-  #TODO: what else do we mean by "Register details" here?
+  expect(content).to include(@property_hash[:last_changed])
+  @property_hash[:owners].each do |owner|
+    expect(content).to include(owner)
+  end
+  expect(content).to include(@property_hash[:postcode])
+  expect(content).to include(@property_hash[:town])
+  expect(content).to include("#{@property_hash[:house_no]} #{@property_hash[:street_name]}")
 end
