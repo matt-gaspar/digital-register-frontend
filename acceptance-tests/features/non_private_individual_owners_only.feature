@@ -14,8 +14,7 @@ Given I am an initial private beta user
 And I have logged in
 And I have a title with a charity with trustees that are private individuals
 When I view the register details page
-Then I cannot view the property owner details for the selected title
-And a message is displayed instead of the property owner details
+Then I get a page not found message
 
 @US044 @DigitalFrontEnd @GovUK
 Scenario: View Charity Non Private Individual
@@ -29,7 +28,6 @@ Then I can view the register details for the selected title
 Scenario: Do Not View Private Individual
 Given I am an initial private beta user
 And I have logged in
-And I have a title with a private individual owner {this means on SOR}
-When I view the register detail page
-Then I cannot view the property owner details for the selected title
-And a message is displayed instead of the property owner details
+And I have a title with a private individual owner
+When I view the register details page
+Then I get a page not found message

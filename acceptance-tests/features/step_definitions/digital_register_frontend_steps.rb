@@ -30,6 +30,7 @@ Given(/^I have a title$/) do
 end
 
 Given(/^I do not have a title$/) do
+  #TODO: setup delete_all_titles as a hook
   # empty the database
   delete_all_titles
   @property_hash = {
@@ -76,6 +77,34 @@ Given(/^I have a title with multiple owners$/) do
   create_proprietor_title_in_db(@property_hash)
 end
 
+Given(/^I have a title with a non private individual owner$/) do
+  # empty the database
+  delete_all_titles
+  title_number = insert_property_non_private_individual_owner
+  @property_hash = {:title_number => title_number}
+end
+
+Given(/^I have a title with a charity with trustees that are private individuals$/) do
+  # empty the database
+  delete_all_titles
+  title_number = insert_property_charity_private_individual_owner
+  @property_hash = {:title_number => title_number}
+end
+
+Given(/^I have a title with a charity with trustees that are non private individual owners$/) do
+  # empty the database
+  delete_all_titles
+  title_number = insert_property_charity_non_private_individual_owner
+  @property_hash = {:title_number => title_number}
+end
+
+Given(/^I have a title with a private individual owner$/) do
+  # empty the database
+  delete_all_titles
+  title_number = insert_property_private_individual_owner
+  @property_hash = {:title_number => title_number}
+end
+
 ##
 # Viewing titles
 ##
@@ -118,40 +147,8 @@ Then(/^I see the date at which the title was last changed$/) do
   expect(content).to include("28 January 2014 at 12:38:58")
 end
 
-
-
-
-
-Given(/^I have a title with a non private individual owner$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Then(/^I can view the register details for the selected title$/) do
-  pending # express the regexp above with the code you wish you had
+  content = page.body.text
+  expect(content).to include(@property_hash[:title_number])
+  #TODO: what else do we mean by "Register details" here?
 end
-
-Given(/^I have a title with a charity with trustees that are private individuals$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^I cannot view the property owner details for the selected title$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^a message is displayed instead of the property owner details$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^I have a title with a charity with trustees that are non private individual owners$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^I have a title with a private individual owner \{this means on SOR\}$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^I view the register detail page$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-#end of sprint three changes
