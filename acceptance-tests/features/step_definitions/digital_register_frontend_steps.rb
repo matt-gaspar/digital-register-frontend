@@ -1,12 +1,16 @@
-Given(/^I am a citizen$/) do
-  #do nothing
+Given(/^I am an initial private beta user$/) do
+  # do nothing
 end
 
 Given(/^I have logged in$/) do
   #TODO: will need to be addressed as part of US53
 end
 
-Given(/^I have a property$/) do
+##
+# Creating titles
+##
+
+Given(/^I have a title$/) do
   # empty the database
   delete_all_titles
   # insert the property_hash data into the database
@@ -25,7 +29,8 @@ Given(/^I have a property$/) do
   create_proprietor_title_in_db(@property_hash)
 end
 
-Given(/^I do not have a property$/) do
+Given(/^I do not have a title$/) do
+  #TODO: setup delete_all_titles as a hook
   # empty the database
   delete_all_titles
   @property_hash = {
@@ -34,29 +39,7 @@ Given(/^I do not have a property$/) do
   #Do not create the title in the database
 end
 
-When(/^I view the property detail page$/) do
-  visit("http://landregistry.local:8003/titles/#{@property_hash[:title_number]}")
-end
-
-Then(/^I see the full address of the property$/) do
-  content = page.body.text
-  expect(content).to include(@property_hash[:postcode])
-  expect(content).to include(@property_hash[:town])
-  expect(content).to include("#{@property_hash[:house_no]} #{@property_hash[:street_name]}")
-end
-
-Then(/^I see the title number of the property$/) do
-  content = page.body.text
-  expect(content).to include(@property_hash[:title_number])
-end
-
-Then(/^I get a page not found message$/) do
-  expect(page.status_code).to eq(404)
-end
-
-
-#*************************************
-Given(/^I have a property owned by an individual$/) do
+Given(/^I have a title with an owner$/) do
   # empty the database
   delete_all_titles
   # insert the property_hash data into the database
@@ -75,12 +58,7 @@ Given(/^I have a property owned by an individual$/) do
   create_proprietor_title_in_db(@property_hash)
 end
 
-Then(/^I can see who owns the property$/) do
-  content = page.body.text
-  expect(content).to include("#{@property_hash[:forename]} #{@property_hash[:surname]}")
-end
-
-Given(/^the property is owned by multiple individuals$/) do
+Given(/^I have a title with multiple owners$/) do
   # empty the database
   delete_all_titles
   # insert the property_hash data into the database
@@ -99,13 +77,69 @@ Given(/^the property is owned by multiple individuals$/) do
   create_proprietor_title_in_db(@property_hash)
 end
 
-Then(/^I can see all the owners the property$/) do
-  #pending # express the regexp above with the code you wish you had
+Given(/^I have a title with a non private individual owner$/) do
+  # empty the database
+  delete_all_titles
+  title = insert_property_non_private_individual_owner
+  @property_hash = title
+end
+
+Given(/^I have a title with a charity with trustees that are private individuals$/) do
+  # empty the database
+  delete_all_titles
+  title = insert_property_charity_private_individual_owner
+  @property_hash = title
+end
+
+Given(/^I have a title with a charity with trustees that are non private individual owners$/) do
+  # empty the database
+  delete_all_titles
+  title = insert_property_charity_non_private_individual_owner
+  @property_hash = title
+end
+
+Given(/^I have a title with a private individual owner$/) do
+  # empty the database
+  delete_all_titles
+  title = insert_property_private_individual_owner
+  @property_hash = title
+end
+
+##
+# Viewing titles
+##
+
+When(/^I view the register details page$/) do
+  visit("http://landregistry.local:8003/titles/#{@property_hash[:title_number]}")
+end
+
+Then(/^I see the full address for the selected title$/) do
+  content = page.body.text
+  expect(content).to include(@property_hash[:postcode])
+  expect(content).to include(@property_hash[:town])
+  expect(content).to include("#{@property_hash[:house_no]} #{@property_hash[:street_name]}")
+end
+
+Then(/^I see the title number for the selected title$/) do
+  content = page.body.text
+  expect(content).to include(@property_hash[:title_number])
+end
+
+Then(/^I get a page not found message$/) do
+  expect(page.status_code).to eq(404)
+end
+
+Then(/^I can see who owns the selected title$/) do
   content = page.body.text
   expect(content).to include("#{@property_hash[:forename]} #{@property_hash[:surname]}")
-  #expect(content).to include("#{@property_hash[:forename2]} #{@property_hash[:surname2]}")
-  #expect(content).to include("#{@property_hash[:forename3]} #{@property_hash[:surname3]}")
-  #expect(content).to include("#{@property_hash[:forename4]} #{@property_hash[:surname4]}")
+end
+
+Then(/^I can see all the owners for the selected title$$/) do
+  content = page.body.text
+  expect(content).to include("#{@property_hash[:forename]} #{@property_hash[:surname]}")
+  expect(content).to include("#{@property_hash[:forename2]} #{@property_hash[:surname2]}")
+  expect(content).to include("#{@property_hash[:forename3]} #{@property_hash[:surname3]}")
+  expect(content).to include("#{@property_hash[:forename4]} #{@property_hash[:surname4]}")
 end
 
 Then(/^I see the date at which the title was last changed$/) do
@@ -113,49 +147,14 @@ Then(/^I see the date at which the title was last changed$/) do
   expect(content).to include("28 January 2014 at 12:38:58")
 end
 
-
-
-
-
-#start of sprint three changes dog 24/2
-Given(/^I am an initial private beta user$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^I have a title with a non private individual owner$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^I view the register details page$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
 Then(/^I can view the register details for the selected title$/) do
-  pending # express the regexp above with the code you wish you had
+  content = page.body.text
+  expect(content).to include(@property_hash[:title_number])
+  expect(content).to include(@property_hash[:last_changed])
+  @property_hash[:owners].each do |owner|
+    expect(content).to include(owner)
+  end
+  expect(content).to include(@property_hash[:postcode])
+  expect(content).to include(@property_hash[:town])
+  expect(content).to include("#{@property_hash[:house_no]} #{@property_hash[:street_name]}")
 end
-
-Given(/^I have a title with a charity with trustees that are private individuals$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^I cannot view the property owner details for the selected title$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Then(/^a message is displayed instead of the property owner details$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^I have a title with a charity with trustees that are non private individual owners$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-Given(/^I have a title with a private individual owner \{this means on SOR\}$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-When(/^I view the register detail page$/) do
-  pending # express the regexp above with the code you wish you had
-end
-
-#end of sprint three changes

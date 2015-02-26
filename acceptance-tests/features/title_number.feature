@@ -5,8 +5,8 @@ Feature: US026 Title Number in the summary box in the digital register
 
 @US026 @DigitalRegistry
 Scenario: Title number on property title
-  Given I am a citizen
+  Given I am an initial private beta user
   And I have logged in
-  And I have a property
-  When I view the property detail page
-  Then I see the title number of the property
+  And I have a title
+  When I view the register details page
+  Then I see the title number for the selected title
