@@ -1,115 +1,32 @@
 {
     "data": {
-        "application_reference": "MA2784E",
-        "class": "Absolute",
-        "districts": [
-            "LUTON"
-        ],
-        "dlr": "Peterborough Office",
-        "edition_date": "2014-05-22",
-        "filed_plan_format": "VECTOR",
-        "groups": [
-            {
-                "category": "PROPERTY",
-                "entries": [
-                    {
-                        "category": "PROPERTY",
-                        "entry_date": "2014-05-22",
-                        "entry_id": "2014-05-22 15:39:52.527610",
-                        "full_text": "The Freehold land shown edged with red on the plan of the above title filed at the Registry and being 17 Kenilworth Road, Luton (LU1 1DQ).",
-                        "infills": [
-                            {
-                                "address": {
-                                    "address_string": "17 Hazelbury Crescent, Luton (LU1 1DZ)",
-                                    "postcode": "LU1 1DZ",
-                                    "street_name": "Hazelbury Crescent",
-                                    "town": "Luton"
-                                },
-                                "type": "Address"
-                            }
-                        ],
-                        "language": "ENG",
-                        "role_code": "RDES",
-                        "sequence_number": 1,
-                        "status": "Current",
-                        "sub_register": "A",
-                        "template_text": "The Freehold land shown edged with red on the plan of the above title filed at the Registry and being *AD*"
+        "address": {
+            "address_string": "17 Hazelbury Crescent, Luton (LU1 1DZ)",
+            "postcode": "LU1 1DZ",
+            "street_name": "Hazelbury Crescent",
+            "town": "Luton"
+        },
+        "proprietors": [
+                {
+                    "addresses": [
+                        {
+                            "address_string": "17 Kenilworth Road, Luton LU1 1DQ",
+                            "address_type": "UK",
+                            "house_no": "17",
+                            "postcode": "LU1 1DQ",
+                            "street_name": "Kenilworth Road",
+                            "town": "Luton"
+                        }
+                    ],
+                    "name": {
+                        "forename": "Scott",
+                        "name_category": "PRIVATE INDIVIDUAL",
+                        "surname": "Oakes"
                     }
-                ]
-            },
-            {
-                "category": "OWNERSHIP",
-                "entries": [
-                    {
-                        "category": "OWNERSHIP",
-                        "entry_date": "2014-05-22",
-                        "entry_id": "2014-05-22 15:39:32.607710",
-                        "full_text": "PROPRIETOR: %SCOTT OAKES% of 17 Kenilworth Road, *Luton* LU1 1DQ.",
-                        "infills": [
-                            {
-                                "proprietors": [
-                                    {
-                                        "addresses": [
-                                            {
-                                                "address_string": "17 Kenilworth Road, Luton LU1 1DQ",
-                                                "address_type": "UK",
-                                                "house_no": "17",
-                                                "postcode": "LU1 1DQ",
-                                                "street_name": "Kenilworth Road",
-                                                "town": "Luton"
-                                            }
-                                        ],
-                                        "name": {
-                                            "forename": "Scott",
-                                            "name_category": "PRIVATE INDIVIDUAL",
-                                            "surname": "Oakes"
-                                        }
-                                    }
-                                ],
-                                "type": "Proprietor"
-                            }
-                        ],
-                        "language": "ENG",
-                        "role_code": "RPRO",
-                        "sequence_number": 1,
-                        "status": "Current",
-                        "sub_register": "B",
-                        "template_text": "PROPRIETOR: *RP*"
-                    },
-                    {
-                        "category": "OWNERSHIP",
-                        "draft_entry_code": "BK688",
-                        "draft_entry_version": 1,
-                        "entry_date": "2014-05-22",
-                        "entry_id": "2014-05-22 15:38:01.287620",
-                        "full_text": "The price stated to have been paid on 1 May 2014 was £100,000.",
-                        "infills": [
-                            {
-                                "date": "2014-05-01",
-                                "text": "01/05/2014",
-                                "type": "DATE"
-                            },
-                            {
-                                "text": "£100,000",
-                                "type": "PRICE"
-                            }
-                        ],
-                        "language": "ENG",
-                        "role_code": "RPPD",
-                        "sequence_number": 2,
-                        "status": "Current",
-                        "sub_register": "B",
-                        "template_text": "The price stated to have been paid on *DA* was *AM*."
-                    }
-                ]
-            }
-        ],
-        "last_app_timestamp": "2014-08-28T12:37:13+01:00",
-        "tenure": "Freehold",
-        "title_number": "DN1000",
-        "uprns": [
-            1068558627
-        ]
+                }
+            ],
+        "last_application_timestamp": "2014-08-28T12:37:13+01:00",
+        "tenure": "Freehold"
     },
     "geometry_data": {
         "geometry": {
