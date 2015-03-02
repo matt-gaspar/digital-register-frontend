@@ -60,3 +60,12 @@ class ViewTitleTestCase(unittest.TestCase):
     def test_proprietor_on_title_page(self, mock_get):
         response = self.app.get('/titles/titleref')
         self.assertIn('Scott Oakes', str(response.data))
+
+    @mock.patch('requests.get', return_value=fake_title)
+    def test_index_geometry_on_title_page(self, mock_get):
+
+        coordinate_data = "[[[508263.97, 221692.13], [508266.4, 221698.84], [508266.35, 221700.25], [508270.3, 221711.15], [508273.29, 221719.53], [508271.4, 221721.65], [508270.68, 221722.44], [508269.69, 221723.53], [508263.58, 221706.87], [508258.98, 221693.93], [508258.01, 221691.18], [508262, 221689.66], [508262.95, 221689.3], [508263.97, 221692.13]]]"
+        response = self.app.get('/titles/titleref')
+        self.assertIn('geometry', str(response.data))
+        self.assertIn('coordinates', str(response.data))
+        self.assertIn(coordinate_data, str(response.data))
