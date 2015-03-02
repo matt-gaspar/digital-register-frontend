@@ -14,6 +14,7 @@ def display_title(title_ref):
         proprietor_names = get_proprietor_names(title_api['data']['proprietors'])
         address_lines = get_address_lines(title_api['data']['address'])
         title = {
+            #ASSUMPTION 1: All titles have a title number
             'number': title_api['title_number'],
             'last_changed': title_api['data'].get('last_application_timestamp', 'No data'),
             'address_lines': address_lines,
@@ -32,6 +33,8 @@ def get_proprietor_names(proprietors_data):
     proprietor_names = []
     for proprietor in proprietors_data:
         name = proprietor['name']
+        #ASSUMPTION 2: all proprietors have a name entry
+        #ASSUMPTION 3: all proprietor names have either forename/surname or non_private_individual name
         if 'forename' in name and 'surname' in name:
             proprietor_names += [{
                 "name": name['forename'] + ' ' + name['surname']
@@ -44,6 +47,7 @@ def get_proprietor_names(proprietors_data):
 
 def get_address_lines(address_data):
     address_lines = []
+    #ASSUMPTION 4: all addresses are only in the house_no, street_name, town and postcode fields
     if address_data:
         first_line_address = ' '.join([address_data[k] for k in ['house_no', 'street_name'] if address_data.get(k, None)])
         all_address_lines = [
