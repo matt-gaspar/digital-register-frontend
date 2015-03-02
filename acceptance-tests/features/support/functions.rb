@@ -38,118 +38,35 @@ def create_proprietor_title_in_db(title_data)
 INSERT INTO "title_register_data" ("title_number", "register_data", "geometry_data") VALUES (
   '#{title_number}',
   '{
-          "application_reference": "MA2784E",
-          "class": "Absolute",
-          "districts": [
-              "LUTON"
-          ],
-          "dlr": "Peterborough Office",
-          "edition_date": "2014-05-22",
-          "filed_plan_format": "VECTOR",
-          "groups": [
+          "address": {
+              "address_string": "#{house_no} #{street_name}, #{town} (#{postcode})",
+              "postcode": "#{postcode}",
+              "town": "#{town}",
+              "house_no": "#{house_no}",
+              "street_name": "#{street_name}"
+          },
+          "proprietors": [
               {
-                  "category": "PROPERTY",
-                  "entries": [
+                  "addresses": [
                       {
-                          "category": "PROPERTY",
-                          "entry_date": "2014-05-22",
-                          "entry_id": "2014-05-22 15:39:52.527610",
-                          "full_text": "#{full_text}",
-                          "infills": [
-                              {
-                                  "address": {
-                                      "address_string": "#{house_no} #{street_name}, #{town} (#{postcode})",
-                                      "postcode": "#{postcode}",
-                                      "town": "#{town}",
-                                      "house_no": "#{house_no}",
-                                      "street_name": "#{street_name}"
-                                  },
-                                  "type": "Address"
-                              }
-                          ],
-                          "language": "ENG",
-                          "role_code": "RDES",
-                          "sequence_number": 1,
-                          "status": "Current",
-                          "sub_register": "A",
-                          "template_text": "The Freehold land shown edged with red on the plan of the above title filed at the Registry and being *AD*"
+                          "address_string":  "#{house_no}, #{street_name}, #{town} #{postcode}",
+                          "address_type": "UK",
+                          "house_no": "#{house_no}",
+                          "postcode": "#{postcode}",
+                          "street_name": "#{street_name}",
+                          "town": "#{town}"
                       }
-                  ]
-              },
-              {
-                  "category": "OWNERSHIP",
-                  "entries": [
-                      {
-                          "category": "OWNERSHIP",
-                          "entry_date": "2014-05-22",
-                          "entry_id": "2014-05-22 15:39:32.607710",
-                          "full_text": "#{full_text}",
-                          "infills": [
-                              {
-                                  "proprietors": [
-                                      {
-                                          "addresses": [
-                                              {
-                                                  "address_string":  "#{house_no}, #{street_name}, #{town} #{postcode}",
-                                                  "address_type": "UK",
-                                                  "house_no": "#{house_no}",
-                                                  "postcode": "#{postcode}",
-                                                  "street_name": "#{street_name}",
-                                                  "town": "#{town}"
-                                              }
-                                          ],
-                                          "name": {
-                                            "surname": "#{surname}",
-                                            "forename": "#{forename}",
-                                            "name_category": "#{name_category}"
-                                          }
-                                      }
-                                      #{multiple_proprietors_json}
-                                  ],
-                                  "type": "Proprietor"
-                              }
-                          ],
-                          "language": "ENG",
-                          "role_code": "RPRO",
-                          "sequence_number": 1,
-                          "status": "Current",
-                          "sub_register": "B",
-                          "template_text": "PROPRIETOR: *RP*"
-                      },
-                      {
-                          "category": "OWNERSHIP",
-                          "draft_entry_code": "BK688",
-                          "draft_entry_version": 1,
-                          "entry_date": "2014-05-22",
-                          "entry_id": "2014-05-22 15:38:01.287620",
-                          "full_text": "The price stated to have been paid on 1 May 2014 was £100,000.",
-                          "infills": [
-                              {
-                                  "date": "2014-05-01",
-                                  "text": "01/05/2014",
-                                  "type": "DATE"
-                              },
-                              {
-                                  "text": "£100,000",
-                                  "type": "PRICE"
-                              }
-                          ],
-                          "language": "ENG",
-                          "role_code": "RPPD",
-                          "sequence_number": 2,
-                          "status": "Current",
-                          "sub_register": "B",
-                          "template_text": "The price stated to have been paid on *DA* was *AM*."
-                      }
-                  ]
+                  ],
+                  "name": {
+                    "surname": "#{surname}",
+                    "forename": "#{forename}",
+                    "name_category": "#{name_category}"
+                  }
               }
+              #{multiple_proprietors_json}
           ],
-          "last_app_timestamp": "#{last_app_timestamp}",
-          "tenure": "Freehold",
-          "title_number": "DN1000",
-          "uprns": [
-              1068558627
-          ]
+          "last_application_timestamp": "#{last_app_timestamp}",
+          "tenure": "Freehold"
       }',
   '{
       "geometry": {

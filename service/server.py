@@ -27,7 +27,7 @@ def display_title(title_ref):
             'last_changed': title_api['data'].get('last_application_timestamp', 'No data'),
             'address_lines': address_lines,
             'proprietors': proprietor_names,
-            'tenure': title_api['data'].get('tenure', 'No data')
+            'tenure': title_api['data'].get('tenure', 'No data'),
             'indexPolygon': indexPolygon
         }
         return render_template('display_title.html', asset_path = '../static/', title=title)
