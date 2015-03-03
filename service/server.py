@@ -9,8 +9,8 @@ register_title_api = app.config['REGISTER_TITLE_API']
 #This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
     indexPolygon = None
-    if geometry_data and ('geometry' in geometry_data) and ('index' in geometry_data['geometry']):
-        indexPolygon = geometry_data['geometry']['index']
+    if geometry_data and ('index' in geometry_data):
+        indexPolygon = geometry_data['index']
     return indexPolygon
 
 @app.route('/titles/<title_ref>', methods=['GET'])
