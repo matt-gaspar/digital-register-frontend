@@ -105,6 +105,11 @@ Given(/^I have a title with a private individual owner$/) do
   @property_hash = title
 end
 
+Given(/^the title has multiple index polygons$/) do
+  # Update geometry with multiple index polygons
+  update_title_geometry_with_multiple_index_polygons("DN1000")
+end
+
 ##
 # Viewing titles
 ##
@@ -157,4 +162,14 @@ Then(/^I can view the register details for the selected title$/) do
   expect(content).to include(@property_hash[:postcode])
   expect(content).to include(@property_hash[:town])
   expect(content).to include("#{@property_hash[:house_no]} #{@property_hash[:street_name]}")
+end
+
+Then(/^I can see the map in the summary box$/) do
+  # Check scale line is displayed to indicate leaflet is being displayed
+  page.has_css?("leaflet-control-scale-line")
+end
+
+Then(/^I can see all the polygons for that title displayed on the map$/) do
+  # DOG & AJ - We tried to do 'something' to check the existance and position of the
+  # index polygons but the effort became impracticable so we parked this work.
 end
