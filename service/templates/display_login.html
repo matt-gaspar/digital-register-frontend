@@ -1,0 +1,33 @@
+{% extends "imports.html" %}
+
+{% block content %}
+<main id="wrapper" role="main">
+    <div id="content">
+
+    <div class="inner-block">
+
+     <h1 class="heading-large">Login</h1>
+
+
+      <form action="" method="post" class="form">
+      <div style="display:none;"><input id="csrf_token" name="csrf_token" type="hidden" value="None"></div>
+
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="username">
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password">
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="button" id="signin">Sign In</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</main>
+{% endblock %}

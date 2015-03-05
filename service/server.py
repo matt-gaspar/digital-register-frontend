@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 from service import app
 import os
-from flask import Flask, abort, render_template
+from flask import Flask, abort, render_template, request
+from flask.ext.wtf import Form, validators
+from wtforms.fields import TextField, BooleanField, PasswordField, SubmitField
+from wtforms.validators import Required
 import requests
 
 register_title_api = app.config['REGISTER_TITLE_API']
@@ -16,6 +19,20 @@ def get_property_address_index_polygon(geometry_data):
 @app.route('/', methods=['GET'])
 def home():
     return render_template('home.html', asset_path = '../static/')
+
+@app.route('/login', methods=['GET', 'POST'])
+def signin():
+    # csrf_enabled = False for development environment only
+  form = SigninForm(csrf_enabled=False)
+
+  if request.method == 'POST':
+    if form.validate() == False:
+      return render_template('display_login.html',asset_path = '../static/', form=form)
+    else:
+      return render_template('search.html', asset_path = '../static/', form=form)
+
+  elif request.method == 'GET':
+    return render_template('display_login.html', asset_path = '../static/', form=form)
 
 @app.route('/titles/<title_ref>', methods=['GET'])
 def display_title(title_ref):
@@ -70,6 +87,18 @@ def get_address_lines(address_data):
         ]
         address_lines = [line for line in all_address_lines if line]
     return address_lines
+
+class SigninForm(Form):
+  email = TextField("Email")
+  password = PasswordField('Password')
+  submit = SubmitField("Sign In")
+
+  def __init__(self, *args, **kwargs):
+    Form.__init__(self, *args, **kwargs)
+
+  def validate(self):
+      #TO DO - insert validation code here
+      return True
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8003))
