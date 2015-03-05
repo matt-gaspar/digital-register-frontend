@@ -13,6 +13,10 @@ def get_property_address_index_polygon(geometry_data):
         indexPolygon = geometry_data['index']
     return indexPolygon
 
+@app.route('/', methods=['GET'])
+def home():
+    return render_template('home.html', asset_path = '../static/')
+
 @app.route('/titles/<title_ref>', methods=['GET'])
 def display_title(title_ref):
     api_response = get_register_title(title_ref)
