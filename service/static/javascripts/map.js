@@ -7,7 +7,7 @@ window.onload = function() {
   if (indexData &&
       (
         (indexData.geometry && indexData.geometry.coordinates && indexData.geometry.coordinates.length > 0) ||
-        (indexData.features[0].geometry && indexData.features[0].geometry.coordinates && indexData.features[0].geometry.coordinates.length > 0)
+        (indexData.features && indexData.features[0].geometry && indexData.features[0].geometry.coordinates && indexData.features[0].geometry.coordinates.length > 0)
       )
     ) {
 
