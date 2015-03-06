@@ -57,3 +57,6 @@ target/
 */.DS_Store
 .DS_Store
 .DS_Store?
+
+# IntelliJ Idea files
+.idea
