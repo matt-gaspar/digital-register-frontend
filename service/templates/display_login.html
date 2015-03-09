@@ -12,14 +12,16 @@
       <form action="" method="post" class="form">
       <div style="display:none;"><input id="csrf_token" name="csrf_token" type="hidden" value="None"></div>
 
+        {{ form.hidden_tag() }}
+
         <div class="form-group">
           <label for="username" class="form-label">Username</label>
-          <input type="text" class="form-control" id="username">
+          <input type="text" class="form-control" id="username" name="username">
         </div>
 
         <div class="form-group">
           <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" id="password">
+          <input type="password" class="form-control" id="password" name="password">
         </div>
 
         <div class="form-group">

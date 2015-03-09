@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-from service import app
+from collections import namedtuple
+from flask_login import login_user, login_required, current_user
+from flask.ext.wtf import Form
+from service import app, login_manager
 import os
 from flask import Flask, abort, render_template, request, url_for, redirect
-from flask.ext.wtf import Form, validators
+# from flask.ext.wtf import Form, validators
 from wtforms.fields import TextField, BooleanField, PasswordField, SubmitField
 from wtforms.validators import Required
 import requests
@@ -17,26 +20,46 @@ def get_property_address_index_polygon(geometry_data):
         indexPolygon = geometry_data['index']
     return indexPolygon
 
+class User():
+    def __init__(self, id):
+        self.userid = id
+    
+    def get_id(self):
+        return self.userid
+    
+    def is_authenticated(self):
+        return True
+    
+    def is_active(self):
+        return True
+    
+    def is_anonymous(self):
+        return False
+
+@login_manager.user_loader
+def load_user(userid):
+    return User(userid)
+
 @app.route('/', methods=['GET'])
 def home():
     return render_template('home.html', asset_path = '../static/')
 
 @app.route('/login', methods=['GET'])
 def signin_page():
-
-
-  return render_template('display_login.html', asset_path = '../static/')
+    return render_template('display_login.html', asset_path = '../static/', form=SigninForm())
 
 @app.route('/login', methods=['POST'])
 def signin():
     # csrf_enabled = False for development environment only
-    form = SigninForm(csrf_enabled=False)
-    if form.validate() == False:
+    # form = SigninForm(csrf_enabled=False)
+    form = SigninForm()
+    if not form.validate():
         # entered details from login form incorrect so redirect back to same page with error messages
         return render_template('display_login.html',asset_path = '../static/', form=form)
     else:
+        login_user(User(form.username.data))
         # form has correct details. Now need to check authorisation
-        authorised = get_login_auth(form.email, form.password)
+        authorised = get_login_auth(form.username, form.password)
         if authorised:
             return redirect(url_for('search'))
         else:
@@ -48,10 +71,12 @@ def get_login_auth(username, password):
     return response
 
 @app.route('/search', methods=['GET', 'POST'])
+@login_required
 def search():
-    return 'hello world'
+    return 'hello {}'.format(current_user.get_id())
 
 @app.route('/titles/<title_ref>', methods=['GET'])
+@login_required
 def display_title(title_ref):
     api_response = get_register_title(title_ref)
     if api_response:
@@ -106,17 +131,12 @@ def get_address_lines(address_data):
     return address_lines
 
 class SigninForm(Form):
-  email = TextField("Email")
-  password = PasswordField('Password')
-  submit = SubmitField("Sign In")
+  # TODO: add validation
+  username = TextField("username")
+  password = PasswordField('password')
 
   def __init__(self, *args, **kwargs):
     Form.__init__(self, *args, **kwargs)
-
-  def validate(self):
-      #TO DO - insert validation code here
-      # need to check if values exist
-      return True
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8003))
