@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 from service import app
 import os
-from flask import Flask, abort, render_template, request
+from flask import Flask, abort, render_template, request, url_for, redirect
 from flask.ext.wtf import Form, validators
 from wtforms.fields import TextField, BooleanField, PasswordField, SubmitField
 from wtforms.validators import Required
 import requests
 
 register_title_api = app.config['REGISTER_TITLE_API']
+login_api = app.config['LOGIN_API']
 
 #This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
@@ -20,19 +21,35 @@ def get_property_address_index_polygon(geometry_data):
 def home():
     return render_template('home.html', asset_path = '../static/')
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET'])
+def signin_page():
+
+
+  return render_template('display_login.html', asset_path = '../static/')
+
+@app.route('/login', methods=['POST'])
 def signin():
     # csrf_enabled = False for development environment only
-  form = SigninForm(csrf_enabled=False)
-
-  if request.method == 'POST':
+    form = SigninForm(csrf_enabled=False)
     if form.validate() == False:
-      return render_template('display_login.html',asset_path = '../static/', form=form)
+        # entered details from login form incorrect so redirect back to same page with error messages
+        return render_template('display_login.html',asset_path = '../static/', form=form)
     else:
-      return render_template('search.html', asset_path = '../static/', form=form)
+        # form has correct details. Now need to check authorisation
+        authorised = get_login_auth(form.email, form.password)
+        if authorised:
+            return redirect(url_for('search'))
+        else:
+            return render_template('display_login.html', asset_path = '../static/', form=form)
+        
+def get_login_auth(username, password):
+    #response = requests.get(login_api+username+'/'+password)
+    response = True
+    return response
 
-  elif request.method == 'GET':
-    return render_template('display_login.html', asset_path = '../static/', form=form)
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    return 'hello world'
 
 @app.route('/titles/<title_ref>', methods=['GET'])
 def display_title(title_ref):
@@ -98,6 +115,7 @@ class SigninForm(Form):
 
   def validate(self):
       #TO DO - insert validation code here
+      # need to check if values exist
       return True
 
 if __name__ == '__main__':
