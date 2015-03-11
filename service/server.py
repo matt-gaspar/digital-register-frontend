@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 from service import app
 import os
-from flask import Flask, abort, render_template
+from flask import Flask, abort, render_template, request, redirect, flash, url_for
 import requests
+import re
 
 register_title_api = app.config['REGISTER_TITLE_API']
+
+app.secret_key = 'a_secret_key'
 
 #This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
@@ -37,6 +40,24 @@ def display_title(title_ref):
         return render_template('display_title.html', asset_path = '../static/', title=title)
     else:
         abort(404)
+
+
+@app.route('/title_search/', methods=['GET', 'POST'])
+def find_titles():
+    if request.method == "POST" and request.form['search_term']:
+        search_term = request.form['search_term']
+        # Determine search term type and preform search
+        title_number_regex = re.compile("^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$")
+        if title_number_regex.match(search_term.upper()):
+            if get_register_title(search_term.upper()):
+                return redirect(url_for('display_title', title_ref=search_term.upper()))
+            else:
+                return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term)
+        else:
+            flash('Search value not in a recognised format')
+            return render_template('search.html', asset_path = '../static/', search_term=search_term)
+    else:
+        return render_template('search.html', asset_path = '../static/')
 
 def get_register_title(title_ref):
     response = requests.get(register_title_api+'titles/'+title_ref)
