@@ -19,7 +19,7 @@
 
                     </div>
 
-                    <form action="/title_search/" method="POST" role="form">
+                    <form action="/title-search/" method="POST" role="form">
                         <div class="form-group">
                             <label class="form-label-bold" for="search-terms">
                                 Find a title
@@ -32,7 +32,7 @@
                               {% if messages %}
                                 <ul>
                                 {% for message in messages %}
-                                    <li>{{ message }} </li>
+                                    <li><span style="color: red">{{ message }}</span></li>
                                 {% endfor %}
                                 </ul>
                               {% endif %}
