@@ -10,13 +10,6 @@ register_title_api = app.config['REGISTER_TITLE_API']
 # TODO Create a proper secret key and store it securely
 app.secret_key = 'a_secret_key'
 
-#This method attempts to retrieve the index polygon data for the entry
-def get_property_address_index_polygon(geometry_data):
-    indexPolygon = None
-    if geometry_data and ('index' in geometry_data):
-        indexPolygon = geometry_data['index']
-    return indexPolygon
-
 @app.route('/', methods=['GET'])
 def home():
     return render_template('home.html', asset_path = '../static/')
@@ -30,7 +23,6 @@ def display_title(title_ref):
         return render_template('display_title.html', asset_path = '../static/', title=title)
     else:
         abort(404)
-
 
 @app.route('/title-search/', methods=['GET', 'POST'])
 def find_titles():
@@ -56,6 +48,10 @@ def find_titles():
         # If not search value enter or a GET request, display the search page
         return render_template('search.html', asset_path = '../static/')
 
+def get_register_title(title_ref):
+    response = requests.get(register_title_api+'titles/'+title_ref)
+    title = format_display_json(response)
+    return title
 
 def format_display_json(api_response):
     if api_response:
@@ -75,11 +71,6 @@ def format_display_json(api_response):
         return title
     else:
         return None
-
-def get_register_title(title_ref):
-    response = requests.get(register_title_api+'titles/'+title_ref)
-    title = format_display_json(response)
-    return title
 
 def get_proprietor_names(proprietors_data):
     proprietor_names = []
@@ -109,6 +100,13 @@ def get_address_lines(address_data):
         ]
         address_lines = [line for line in all_address_lines if line]
     return address_lines
+
+#This method attempts to retrieve the index polygon data for the entry
+def get_property_address_index_polygon(geometry_data):
+    indexPolygon = None
+    if geometry_data and ('index' in geometry_data):
+        indexPolygon = geometry_data['index']
+    return indexPolygon
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8003))
