@@ -22,12 +22,15 @@ with open('tests/fake_partial_address.json', 'r') as fake_partial_address_file:
     fake_partial_address_bytes = str.encode(fake_partial_address_json_string)
     fake_partial_address = FakeResponse(fake_partial_address_bytes)
 
+unavailable_title = FakeResponse('', 404)
+
 class ViewTitleTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = app.test_client()
 
-    def test_get_title_page_no_title(self):
+    @mock.patch('requests.get', return_value=unavailable_title)
+    def test_get_title_page_no_title(self, mock_get):
         response = self.app.get('/titles/titleref')
         assert response.status_code == 404
 
@@ -93,6 +96,7 @@ class ViewTitleTestCase(unittest.TestCase):
         response = self.app.post('/title-search/', data=dict(search_term='invalid value'))
         self.assertIn('Search value not in a recognised format', str(response.data))
 
-    def test_title_search_title_not_found(self):
+    @mock.patch('requests.get', return_value=unavailable_title)
+    def test_title_search_title_not_found(self, mock_get):
         response = self.app.post('/title-search/', data=dict(search_term='DT1000'))
         self.assertIn('No result(s) found for the Title Number: ', str(response.data))
