@@ -4,7 +4,10 @@ import os
 from flask import Flask, abort, render_template, request, redirect, flash, url_for, session
 import requests
 import re
+import logging
+import logging.config
 
+logger = logging.getLogger(__name__)
 register_title_api = app.config['REGISTER_TITLE_API']
 
 # TODO Create a proper secret key and store it securely
@@ -20,6 +23,7 @@ def display_title(title_ref):
     title = session.pop('title', get_register_title(title_ref))
     if title:
         # If the title was found, display the page
+        logger.info("VIEW REGISTER: Title number {0} was viewed by {1}".format(title_ref, "todo-user"))
         return render_template('display_title.html', asset_path = '../static/', title=title)
     else:
         abort(404)
@@ -28,6 +32,7 @@ def display_title(title_ref):
 def find_titles():
     if request.method == "POST" and request.form['search_term']:
         search_term = request.form['search_term']
+        logger.info("SEARCH REGISTER: {0} was searched by {1}".format(search_term, "todo-user"))
         # Determine search term type and preform search
         title_number_regex = re.compile("^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$")
         if title_number_regex.match(search_term.upper()):
