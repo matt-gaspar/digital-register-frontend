@@ -93,18 +93,54 @@ def get_proprietor_names(proprietors_data):
             }]
     return proprietor_names
 
+def append_line_if_exists(lines, address_data, key):
+    if key in address_data:
+        lines.append(address_data[key])
+    return lines
+
+def append_building_description(lines, address_data):
+    if 'sub_building_description' in address_data and 'sub_building_no' in address_data:
+        lines.append("{0} {1}".format(address_data['sub_building_description'], address_data['sub_building_no']))
+    elif 'sub_building_description' in address_data:
+        lines.append(address_data['sub_building_description'])
+    elif 'sub_building_no' in address_data:
+        lines.append(address_data['sub_building_no'])
+    return lines
+
+def append_street_name(lines, address_data):
+    street_name_string = ""
+    if 'house_no' in address_data or 'house_alpha' in address_data:
+        street_name_string+="{0}{1}".format(address_data.get('house_no', ''), address_data.get('house_alpha', ''))
+    if 'secondary_house_no' in address_data or 'secondary_house_alpha' in address_data:
+        secondary_string = "{0}{1}".format(address_data.get('secondary_house_no', ''), address_data.get('secondary_house_alpha', ''))
+        if street_name_string:
+            street_name_string+="-{0}".format(secondary_string)
+        else:
+            street_name_string+=secondary_string
+    if 'street_name' in address_data:
+        street_name = address_data['street_name']
+        if street_name_string:
+            street_name_string+=" {0}".format(street_name)
+        else:
+            street_name_string+=street_name
+    if street_name_string:
+        lines.append(street_name_string)
+    return lines
+
 def get_address_lines(address_data):
-    address_lines = []
-    #ASSUMPTION 4: all addresses are only in the house_no, street_name, town and postcode fields
+    lines = []
     if address_data:
-        first_line_address = ' '.join([address_data[k] for k in ['house_no', 'street_name'] if address_data.get(k, None)])
-        all_address_lines = [
-            first_line_address,
-            address_data.get('town', ''),
-            address_data.get('postcode', '')
-        ]
-        address_lines = [line for line in all_address_lines if line]
-    return address_lines
+        lines = append_line_if_exists(lines, address_data, 'leading_info')
+        lines = append_building_description(lines, address_data)
+        lines = append_line_if_exists(lines, address_data, 'house_description')
+        lines = append_street_name(lines, address_data)
+        lines = append_line_if_exists(lines, address_data, 'street_name_2')
+        lines = append_line_if_exists(lines, address_data, 'local_name')
+        lines = append_line_if_exists(lines, address_data, 'local_name_2')
+        lines = append_line_if_exists(lines, address_data, 'town')
+        lines = append_line_if_exists(lines, address_data, 'postcode')
+        lines = append_line_if_exists(lines, address_data, 'trail_info')
+    return lines
 
 #This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
