@@ -9,10 +9,7 @@
      <h1 class="heading-large">Login</h1>
 
 
-      <form action="" method="post" class="form">
-      <div style="display:none;"><input id="csrf_token" name="csrf_token" type="hidden" value="None"></div>
-
-        {{ form.hidden_tag() }}
+      <form action="{{ url_for('signin')}}" method="post" class="form">
 
         <div class="form-group">
           <label for="username" class="form-label">Username</label>

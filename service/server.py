@@ -1,17 +1,16 @@
 #!/usr/bin/env python
-from collections import namedtuple
 from flask_login import login_user, login_required, current_user
-from flask.ext.wtf import Form
 from service import app, login_manager
 import os
 from flask import Flask, abort, render_template, request, url_for, redirect
-# from flask.ext.wtf import Form, validators
-from wtforms.fields import TextField, BooleanField, PasswordField, SubmitField
+from flask_wtf import Form
+from wtforms.fields import StringField, PasswordField
 from wtforms.validators import Required
 import requests
 
 register_title_api = app.config['REGISTER_TITLE_API']
 login_api = app.config['LOGIN_API']
+
 
 #This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
@@ -20,19 +19,20 @@ def get_property_address_index_polygon(geometry_data):
         indexPolygon = geometry_data['index']
     return indexPolygon
 
+
 class User():
     def __init__(self, id):
         self.userid = id
-    
+
     def get_id(self):
         return self.userid
-    
+
     def is_authenticated(self):
         return True
-    
+
     def is_active(self):
         return True
-    
+
     def is_anonymous(self):
         return False
 
@@ -42,32 +42,33 @@ def load_user(userid):
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('home.html', asset_path = '../static/')
+    return render_template('home.html', asset_path='../static/')
 
 @app.route('/login', methods=['GET'])
 def signin_page():
-    return render_template('display_login.html', asset_path = '../static/', form=SigninForm())
+    # csrf_enabled = False for development environment only
+    return render_template('display_login.html', asset_path='../static/', form=SigninForm(csrf_enabled=False))
 
 @app.route('/login', methods=['POST'])
 def signin():
     # csrf_enabled = False for development environment only
-    # form = SigninForm(csrf_enabled=False)
     form = SigninForm()
+    # form = SigninForm()
     if not form.validate():
         # entered details from login form incorrect so redirect back to same page with error messages
-        return render_template('display_login.html',asset_path = '../static/', form=form)
+        return render_template('display_login.html', asset_path='../static/', form=form)
     else:
-        login_user(User(form.username.data))
         # form has correct details. Now need to check authorisation
         authorised = get_login_auth(form.username, form.password)
         if authorised:
+            login_user(User(form.username.data))
             return redirect(url_for('search'))
         else:
-            return render_template('display_login.html', asset_path = '../static/', form=form)
-        
+            return render_template('display_login.html', asset_path='../static/', form=form)
+
+
 def get_login_auth(username, password):
-    #response = requests.get(login_api+username+'/'+password)
-    response = True
+    response = requests.get(login_api + username + '/' + password)
     return response
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -93,13 +94,15 @@ def display_title(title_ref):
             'tenure': title_api['data'].get('tenure', 'No data'),
             'indexPolygon': indexPolygon
         }
-        return render_template('display_title.html', asset_path = '../static/', title=title)
+        return render_template('display_title.html', asset_path='../static/', title=title)
     else:
         abort(404)
+
 
 def get_register_title(title_ref):
     response = requests.get(register_title_api+'titles/'+title_ref)
     return response
+
 
 def get_proprietor_names(proprietors_data):
     proprietor_names = []
@@ -117,6 +120,7 @@ def get_proprietor_names(proprietors_data):
             }]
     return proprietor_names
 
+
 def get_address_lines(address_data):
     address_lines = []
     #ASSUMPTION 4: all addresses are only in the house_no, street_name, town and postcode fields
@@ -130,13 +134,13 @@ def get_address_lines(address_data):
         address_lines = [line for line in all_address_lines if line]
     return address_lines
 
-class SigninForm(Form):
-  # TODO: add validation
-  username = TextField("username")
-  password = PasswordField('password')
 
-  def __init__(self, *args, **kwargs):
-    Form.__init__(self, *args, **kwargs)
+class SigninForm(Form):
+    username = StringField('username', [Required(message='username is required')])
+    password = PasswordField('password', [Required(message='pssword is required')])
+    
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8003))
