@@ -94,9 +94,9 @@ class ViewTitleTestCase(unittest.TestCase):
 
     def test_title_search_invalid_search_value_format(self):
         response = self.app.post('/title-search/', data=dict(search_term='invalid value'))
-        self.assertIn('Search value not in a recognised format', str(response.data))
+        self.assertIn('No result(s) found', str(response.data))
 
     @mock.patch('requests.get', return_value=unavailable_title)
     def test_title_search_title_not_found(self, mock_get):
         response = self.app.post('/title-search/', data=dict(search_term='DT1000'))
-        self.assertIn('No result(s) found for the Title Number: ', str(response.data))
+        self.assertIn('No result(s) found', str(response.data))
