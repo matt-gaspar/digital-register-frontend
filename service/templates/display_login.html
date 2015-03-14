@@ -1,4 +1,4 @@
-{% extends "imports.html" %}
+{% extends "layout.html" %}
 
 {% block content %}
 <main id="wrapper" role="main">
@@ -14,11 +14,21 @@
         <div class="form-group">
           <label for="username" class="form-label">Username</label>
           <input type="text" class="form-control" id="username" name="username">
+            <div class="errors">
+            {% for message in form.username.errors %}
+            {{ message }}
+            {% endfor %}
+            </div>
         </div>
 
         <div class="form-group">
           <label for="password" class="form-label">Password</label>
           <input type="password" class="form-control" id="password" name="password">
+            <div class="errors">
+                {% for message in form.password.errors %}
+                {{ message }}
+                {% endfor %}
+            </div>
         </div>
 
         <div class="form-group">

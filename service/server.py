@@ -7,9 +7,19 @@ from flask_wtf import Form
 from wtforms.fields import StringField, PasswordField
 from wtforms.validators import Required
 import requests
+import json
 
 register_title_api = app.config['REGISTER_TITLE_API']
 login_api = app.config['LOGIN_API']
+login_json = '''
+{
+    crendentials{
+        'user_id':{}
+        'password':{}   
+    }
+}
+'''
+forward_slash = '%2F'
 
 
 #This method attempts to retrieve the index polygon data for the entry
@@ -21,8 +31,8 @@ def get_property_address_index_polygon(geometry_data):
 
 
 class User():
-    def __init__(self, id):
-        self.userid = id
+    def __init__(self, username):
+        self.userid = username
 
     def get_id(self):
         return self.userid
@@ -53,23 +63,29 @@ def signin_page():
 def signin():
     # csrf_enabled = False for development environment only
     form = SigninForm()
-    # form = SigninForm()
+    redirection_url = request.args['next'].replace(forward_slash, '')
     if not form.validate():
         # entered details from login form incorrect so redirect back to same page with error messages
         return render_template('display_login.html', asset_path='../static/', form=form)
     else:
         # form has correct details. Now need to check authorisation
-        authorised = get_login_auth(form.username, form.password)
+        authorised = get_login_auth(form.username.data, form.password.data)
         if authorised:
             login_user(User(form.username.data))
-            return redirect(url_for('search'))
+            return redirect(url_for("'" + redirection_url + "'"))
         else:
             return render_template('display_login.html', asset_path='../static/', form=form)
 
 
 def get_login_auth(username, password):
-    response = requests.get(login_api + username + '/' + password)
-    return response
+    login_endpoint = login_api + 'user/authenticate'
+    credentials = login_json.format(username, password)
+    headers = {'content-type': 'application/json'}
+    response = requests.post(login_endpoint, data=json.dumps(credentials), headers=headers)
+    authorised = False
+    if response.status_code == 200:
+        authorised = True
+    return authorised
 
 @app.route('/search', methods=['GET', 'POST'])
 @login_required
@@ -136,8 +152,8 @@ def get_address_lines(address_data):
 
 
 class SigninForm(Form):
-    username = StringField('username', [Required(message='username is required')])
-    password = PasswordField('password', [Required(message='pssword is required')])
+    username = StringField('username', [Required(message='Username is required')])
+    password = PasswordField('password', [Required(message='Password is required')])
     
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
