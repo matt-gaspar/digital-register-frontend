@@ -19,7 +19,7 @@ login_json = '''
     }
 }
 '''
-forward_slash = '%2F'
+forward_slash = '/'
 
 
 #This method attempts to retrieve the index polygon data for the entry
@@ -61,12 +61,13 @@ def signin_page():
 
 @app.route('/login', methods=['POST'])
 def signin():
-    # csrf_enabled = False for development environment only
-    form = SigninForm()
-    redirection_url = request.args['next'].replace(forward_slash, '')
+    form = SigninForm(request.form)
+    # need to record the URL user was trying to hit before being redirected to login page
+    redirection_url = request.args.get('next') or url_for('search')
+    redirection_url = redirection_url.replace(forward_slash, '')
     if not form.validate():
         # entered details from login form incorrect so redirect back to same page with error messages
-        return render_template('display_login.html', asset_path='../static/', form=form)
+        return render_template('display_login.html', asset_path='../static/', next=redirection_url, form=form)
     else:
         # form has correct details. Now need to check authorisation
         authorised = get_login_auth(form.username.data, form.password.data)
