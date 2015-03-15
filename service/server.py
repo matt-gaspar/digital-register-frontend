@@ -11,14 +11,7 @@ import json
 
 register_title_api = app.config['REGISTER_TITLE_API']
 login_api = app.config['LOGIN_API']
-login_json = '''
-{
-    crendentials{
-        'user_id':{}
-        'password':{}   
-    }
-}
-'''
+login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
 forward_slash = '/'
 
 
@@ -61,9 +54,9 @@ def signin_page():
 
 @app.route('/login', methods=['POST'])
 def signin():
-    form = SigninForm(request.form)
+    form = SigninForm(csrf_enabled=False)
     # need to record the URL user was trying to hit before being redirected to login page
-    redirection_url = request.args.get('next') or url_for('search')
+    redirection_url = request.args.get('next') or 'search'
     redirection_url = redirection_url.replace(forward_slash, '')
     if not form.validate():
         # entered details from login form incorrect so redirect back to same page with error messages
@@ -80,9 +73,9 @@ def signin():
 
 def get_login_auth(username, password):
     login_endpoint = login_api + 'user/authenticate'
-    credentials = login_json.format(username, password)
+    formatted_json = login_json.format(username, password)
     headers = {'content-type': 'application/json'}
-    response = requests.post(login_endpoint, data=json.dumps(credentials), headers=headers)
+    response = requests.post(login_endpoint, data=json.dumps(formatted_json), headers=headers)
     authorised = False
     if response.status_code == 200:
         authorised = True
