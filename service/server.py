@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from service import app
 import os
-from flask import Flask, abort, render_template, request, redirect, flash, url_for, session
+from flask import Flask, abort, render_template, request, redirect, url_for, session
 import requests
 import re
 import logging
@@ -30,7 +30,7 @@ def display_title(title_ref):
 
 @app.route('/title-search/', methods=['GET', 'POST'])
 def find_titles():
-    if request.method == "POST" and request.form['search_term']:
+    if request.method == "POST":
         search_term = request.form['search_term']
         logger.info("SEARCH REGISTER: {0} was searched by {1}".format(search_term, "todo-user"))
         # Determine search term type and preform search
@@ -46,9 +46,8 @@ def find_titles():
                 # If title not found display 'no title found' screen
                 return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term)
         else:
-            # If the search value was not in an expected format, return to search screen with error message
-            flash('Search value not in a recognised format')
-            return render_template('search.html', asset_path = '../static/', search_term=search_term)
+            # If search value doesn't match, return no results found screen
+            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term)
     else:
         # If not search value enter or a GET request, display the search page
         return render_template('search.html', asset_path = '../static/')
