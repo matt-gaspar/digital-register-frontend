@@ -2,18 +2,21 @@
 from flask_login import login_user, login_required, current_user
 from service import app, login_manager
 import os
-from flask import Flask, abort, render_template, request, url_for, redirect
+from flask import Flask, abort, render_template, request, redirect
 from flask_wtf import Form
 from wtforms.fields import StringField, PasswordField
 from wtforms.validators import Required
 import requests
-import json
+import logging
+import logging.config
 
 register_title_api = app.config['REGISTER_TITLE_API']
 login_api = app.config['LOGIN_API']
 login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
 forward_slash = '/'
+unauthorised_wording = 'There was an error with your Username/Password combination. Please try again'
 
+LOGGER = logging.getLogger(__name__)
 
 #This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
@@ -62,20 +65,23 @@ def signin():
         # entered details from login form incorrect so redirect back to same page with error messages
         return render_template('display_login.html', asset_path='../static/', next=redirection_url, form=form)
     else:
+        username = form.username.data
         # form has correct details. Now need to check authorisation
-        authorised = get_login_auth(form.username.data, form.password.data)
+        authorised = get_login_auth(username, form.password.data)
         if authorised:
-            login_user(User(form.username.data))
-            return redirect(url_for("'" + redirection_url + "'"))
+            login_user(User(username))
+            LOGGER.info('User {} logged in'.format(username))
+            return redirect(redirection_url)
         else:
-            return render_template('display_login.html', asset_path='../static/', form=form)
+            return render_template('display_login.html', asset_path='../static/', form=form, 
+                                   unauthorised=unauthorised_wording, next=redirection_url)
 
 
 def get_login_auth(username, password):
     login_endpoint = login_api + 'user/authenticate'
     formatted_json = login_json.format(username, password)
     headers = {'content-type': 'application/json'}
-    response = requests.post(login_endpoint, data=json.dumps(formatted_json), headers=headers)
+    response = requests.post(login_endpoint, data=formatted_json, headers=headers)
     authorised = False
     if response.status_code == 200:
         authorised = True
