@@ -79,7 +79,6 @@ login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
 mock_response = namedtuple('Response', ['status_code'])
 successful_response = mock_response(200)
 invalid_credentials = mock_response(401)
-invalid_request = mock_response(400)
 
 
 class TestLogin:
@@ -135,8 +134,8 @@ class TestLogin:
 
     @mock.patch('requests.post', return_value=invalid_credentials)
     def test_invalid_credentials(self, mock_post):
-        response = self.app.post('/login', data={'username': '',
-                                                 'password': ''},
+        response = self.app.post('/login', data={'username': 'wrongname',
+                                                 'password': 'wrongword'},
                                  follow_redirects=True)
         assert 'There was an error with your Username/Password combination. Please try again' in str(response.data)
 
