@@ -5,7 +5,7 @@ import os
 from flask import Flask, abort, render_template, request, redirect
 from flask_wtf import Form
 from wtforms.fields import StringField, PasswordField
-from wtforms.validators import Required
+from wtforms.validators import Required, Length
 import requests
 import logging
 import logging.config
@@ -152,7 +152,7 @@ def get_address_lines(address_data):
 
 
 class SigninForm(Form):
-    username = StringField('username', [Required(message='Username is required')])
+    username = StringField('username', [Required(message='Username is required'), Length(min=4, max=70, message='Username is incorrect')])
     password = PasswordField('password', [Required(message='Password is required')])
     
     def __init__(self, *args, **kwargs):

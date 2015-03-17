@@ -102,7 +102,7 @@ class TestLogin:
                                                  'password': 'password1'},
                                  follow_redirects=True)
         
-        assert True
+        assert response.status_code == 200
 
     @mock.patch('requests.post', return_value=successful_response)
     def test_missing_username(self, mock_post):
@@ -139,5 +139,20 @@ class TestLogin:
                                  follow_redirects=True)
         assert 'There was an error with your Username/Password combination. Please try again' in str(response.data)
 
+    @mock.patch('requests.post', return_value=invalid_credentials)
+    def test_overlong_username(self, mock_post):
+        response = self.app.post('/login', data={'username': '12345678901234567890123456789012345678901234567890123456789012345678901',
+                                                 'password': 'wrongword'},
+                                 follow_redirects=True)
+        assert 'Username is incorrect' in str(response.data)
+
+    @mock.patch('requests.post', return_value=invalid_credentials)
+    def test_too_short_username(self, mock_post):
+        response = self.app.post('/login', data={'username': '123',
+                                                 'password': 'wrongword'},
+                                 follow_redirects=True)
+        assert 'Username is incorrect' in str(response.data)
+
+        
 if __name__ == '__main__':
     pytest.main()
