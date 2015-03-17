@@ -26,10 +26,18 @@ with open('tests/fake_partial_address.json', 'r') as fake_partial_address_file:
     fake_partial_address_bytes = str.encode(fake_partial_address_json_string)
     fake_partial_address = FakeResponse(fake_partial_address_bytes)
 
+unavailable_title = FakeResponse('', 404)
+
+
 class TestViewTitle:
 
     def setup_method(self, method):
         self.app = app.test_client()
+
+    @mock.patch('requests.get', return_value=unavailable_title)
+    def test_get_title_page_no_title(self, mock_get):
+        response = self.app.get('/titles/titleref')
+        assert response.status_code == 404
 
     @mock.patch('requests.get', return_value=fake_title)
     def test_get_title_page(self, mock_get):
@@ -74,6 +82,30 @@ class TestViewTitle:
         assert 'coordinates' in str(response.data)
         assert coordinate_data in str(response.data)
 
+    def test_get_title_search_page(self):
+        response = self.app.get('/title-search/')
+        assert response.status_code == 200
+        assert 'Find a title' in str(response.data)
+    
+    @mock.patch('requests.get', return_value=fake_title)
+    def test_title_search_success(self, mock_get):
+        response = self.app.post('/title-search/', data=dict(search_term='DN1000'), follow_redirects=True)
+        assert response.status_code == 200
+        assert 'DN1000' in str(response.data)
+        assert '28 August 2014 at 12:37:13' in str(response.data)
+        assert '17 Hazelbury Crescent' in str(response.data)
+        assert 'Luton' in str(response.data)
+        assert 'LU1 1DZ' in str(response.data)
+    
+    def test_title_search_invalid_search_value_format(self):
+        response = self.app.post('/title-search/', data=dict(search_term='invalid value'))
+        assert 'No result(s) found' in str(response.data)
+    
+    @mock.patch('requests.get', return_value=unavailable_title)
+    def test_title_search_title_not_found(self, mock_get):
+        response = self.app.post('/title-search/', data=dict(search_term='DT1000'))
+        assert 'No result(s) found' in str(response.data)
+
 
 login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
 mock_response = namedtuple('Response', ['status_code'])
@@ -85,6 +117,16 @@ class TestLogin:
 
     def setup_method(self, method):
         self.app = app.test_client()
+
+    def test_get_login_page(self):
+        response = self.app.get('/login')
+        assert response.status_code == 200
+        assert 'Digital Register Login' in str(response.data)
+
+    def test_get_home_page(self):
+        response = self.app.get('/')
+        assert response.status_code == 200
+        assert 'Home' in str(response.data)
 
     @mock.patch('requests.post', return_value=successful_response)
     def test_calls_api(self, mock_post):
@@ -156,3 +198,4 @@ class TestLogin:
         
 if __name__ == '__main__':
     pytest.main()
+
