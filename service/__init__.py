@@ -12,6 +12,7 @@ from config import CONFIG_DICT
 
 app = Flask(__name__)
 app.config.update(CONFIG_DICT)
+# TODO: Needs to be properly secure!
 app.secret_key = 'change_this_key-not_secure'
 
 login_manager = LoginManager()
