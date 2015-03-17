@@ -1,6 +1,10 @@
 #!/usr/bin/env python
-from service import app
+from flask_login import login_user, login_required, current_user
+from service import app, login_manager
 import os
+from flask_wtf import Form
+from wtforms.fields import StringField, PasswordField
+from wtforms.validators import Required, Length
 from flask import Flask, abort, render_template, request, redirect, url_for, session
 import requests
 import re
@@ -9,16 +13,78 @@ import logging.config
 
 logger = logging.getLogger(__name__)
 register_title_api = app.config['REGISTER_TITLE_API']
+login_api = app.config['LOGIN_API']
+login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
+forward_slash = '/'
+unauthorised_wording = 'There was an error with your Username/Password combination. Please try again'
 google_analytics_api_key = app.config['GOOGLE_ANALYTICS_API_KEY']
 
-# TODO Create a proper secret key and store it securely
-app.secret_key = 'a_secret_key'
+LOGGER = logging.getLogger(__name__)
+
+
+class User():
+    def __init__(self, username):
+        self.userid = username
+
+    def get_id(self):
+        return self.userid
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+@login_manager.user_loader
+def load_user(userid):
+    return User(userid)
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('home.html', asset_path = '../static/')
+    return render_template('home.html', asset_path='../static/')
+
+@app.route('/login', methods=['GET'])
+def signin_page():
+    # csrf_enabled = False for development environment only
+    return render_template('display_login.html', asset_path='../static/', form=SigninForm(csrf_enabled=False))
+
+@app.route('/login', methods=['POST'])
+def signin():
+    form = SigninForm(csrf_enabled=False)
+    # need to record the URL user was trying to hit before being redirected to login page
+    redirection_url = request.args.get('next') or 'title-search'
+    redirection_url = redirection_url.replace(forward_slash, '')
+    if not form.validate():
+        # entered details from login form incorrect so redirect back to same page with error messages
+        return render_template('display_login.html', asset_path='../static/', next=redirection_url, form=form)
+    else:
+        username = form.username.data
+        # form has correct details. Now need to check authorisation
+        authorised = get_login_auth(username, form.password.data)
+        if authorised:
+            login_user(User(username))
+            LOGGER.info('User {} logged in'.format(username))
+            return redirect(redirection_url)
+        else:
+            return render_template('display_login.html', asset_path='../static/', form=form, 
+                                   unauthorised=unauthorised_wording, next=redirection_url)
+
+
+def get_login_auth(username, password):
+    login_endpoint = login_api + 'user/authenticate'
+    formatted_json = login_json.format(username, password)
+    headers = {'content-type': 'application/json'}
+    response = requests.post(login_endpoint, data=formatted_json, headers=headers)
+    authorised = False
+    if response.status_code == 200:
+        authorised = True
+    return authorised
 
 @app.route('/titles/<title_ref>', methods=['GET'])
+@login_required
 def display_title(title_ref):
     # Check to see if the Title dict is in the session, else try to retrieve it
     title = session.pop('title', get_register_title(title_ref))
@@ -30,6 +96,7 @@ def display_title(title_ref):
         abort(404)
 
 @app.route('/title-search/', methods=['GET', 'POST'])
+@login_required
 def find_titles():
     if request.method == "POST":
         search_term = request.form['search_term']
@@ -76,6 +143,7 @@ def format_display_json(api_response):
         return title
     else:
         return None
+
 
 def get_proprietor_names(proprietors_data):
     proprietor_names = []
@@ -153,6 +221,14 @@ def get_property_address_index_polygon(geometry_data):
     if geometry_data and ('index' in geometry_data):
         indexPolygon = geometry_data['index']
     return indexPolygon
+
+
+class SigninForm(Form):
+    username = StringField('username', [Required(message='Username is required'), Length(min=4, max=70, message='Username is incorrect')])
+    password = PasswordField('password', [Required(message='Password is required')])
+    
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8003))

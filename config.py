@@ -1,10 +1,14 @@
 import os
+import datetime
+
 
 CONFIG_DICT = {
     'DEBUG': False,
     'REGISTER_TITLE_API': 'http://landregistry.local:8004/',
     'LOGGING_CONFIG_FILE_PATH': 'logging_config.json',
+    'LOGIN_API': 'http://landregistry.local:8005/',
     'GOOGLE_ANALYTICS_API_KEY': 'UA-59849906-2',
+    'PERMANENT_SESSION_LIFETIME': datetime.timedelta(minutes=15)
 }
 
 settings = os.environ.get('SETTINGS')

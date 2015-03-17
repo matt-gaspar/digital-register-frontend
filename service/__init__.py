@@ -4,16 +4,28 @@ from flask import Flask
 import dateutil
 import dateutil.parser
 import json
+from flask_login import LoginManager
+from flask_wtf.csrf import CsrfProtect
 
 from config import CONFIG_DICT
 
 
 app = Flask(__name__)
 app.config.update(CONFIG_DICT)
+# TODO: Needs to be properly secure!
+app.secret_key = 'change_this_key-not_secure'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view='/login'
+
+# csrf = CsrfProtect()
+# csrf.init_app(app)
 
 
 def format_datetime(value):
     return dateutil.parser.parse(value).strftime("%d %B %Y at %H:%M:%S")
+
 
 def setup_logging(logging_config_file_path):
     try:
