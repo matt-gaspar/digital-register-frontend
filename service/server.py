@@ -17,6 +17,7 @@ login_api = app.config['LOGIN_API']
 login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
 forward_slash = '/'
 unauthorised_wording = 'There was an error with your Username/Password combination. Please try again'
+google_analytics_api_key = app.config['GOOGLE_ANALYTICS_API_KEY']
 
 LOGGER = logging.getLogger(__name__)
 
@@ -90,7 +91,7 @@ def display_title(title_ref):
     if title:
         # If the title was found, display the page
         logger.info("VIEW REGISTER: Title number {0} was viewed by {1}".format(title_ref, "todo-user"))
-        return render_template('display_title.html', asset_path = '../static/', title=title)
+        return render_template('display_title.html', asset_path = '../static/', title=title, google_api_key=google_analytics_api_key)
     else:
         abort(404)
 
@@ -111,13 +112,13 @@ def find_titles():
                 return redirect(url_for('display_title', title_ref=search_term.upper()))
             else:
                 # If title not found display 'no title found' screen
-                return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term)
+                return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
         else:
             # If search value doesn't match, return no results found screen
-            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term)
+            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
     else:
         # If not search value enter or a GET request, display the search page
-        return render_template('search.html', asset_path = '../static/')
+        return render_template('search.html', asset_path = '../static/', google_api_key=google_analytics_api_key)
 
 def get_register_title(title_ref):
     response = requests.get(register_title_api+'titles/'+title_ref)
