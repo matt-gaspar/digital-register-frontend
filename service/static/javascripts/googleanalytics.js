@@ -13,17 +13,3 @@ if (googleAnalyticsApiKey.length > 0) {
   // send an initial pageview event for logging
   ga('send', 'pageview');
 }
-
-/**
-* Function that tracks a click on an outbound link in Google Analytics.
-* This function takes a valid URL string as an argument, and uses that URL string
-* as the event label.
-*/
-var trackOutboundLink = function(url) {
-  // to see this event in the Google Analytics website go to Behaviour >> Events >> Overview
-   ga('send', 'event', 'outbound', 'click', url, {'hitCallback':
-     function () {
-       document.location = url;
-     }
-   });
-}
