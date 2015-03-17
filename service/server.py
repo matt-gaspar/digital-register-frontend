@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from service import app
 import os
-from flask import Flask, abort, render_template, request, redirect, flash, url_for, session
+from flask import Flask, abort, render_template, request, redirect, url_for, session
 import requests
 import re
 import logging
@@ -31,7 +31,7 @@ def display_title(title_ref):
 
 @app.route('/title-search/', methods=['GET', 'POST'])
 def find_titles():
-    if request.method == "POST" and request.form['search_term']:
+    if request.method == "POST":
         search_term = request.form['search_term']
         logger.info("SEARCH REGISTER: {0} was searched by {1}".format(search_term, "todo-user"))
         # Determine search term type and preform search
@@ -47,9 +47,8 @@ def find_titles():
                 # If title not found display 'no title found' screen
                 return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
         else:
-            # If the search value was not in an expected format, return to search screen with error message
-            flash('Search value not in a recognised format')
-            return render_template('search.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
+            # If search value doesn't match, return no results found screen
+            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
     else:
         # If not search value enter or a GET request, display the search page
         return render_template('search.html', asset_path = '../static/', google_api_key=google_analytics_api_key)
@@ -82,8 +81,15 @@ def get_proprietor_names(proprietors_data):
     proprietor_names = []
     for proprietor in proprietors_data:
         name = proprietor['name']
-        #ASSUMPTION 2: all proprietors have a name entry
-        #ASSUMPTION 3: all proprietor names have either forename/surname or non_private_individual name
+        #TODO: decide which of the following fields we want to display
+        # company_reg_num
+        # country_incorporation
+        # company_location
+        # local_authority_area
+        # name_supplimentary
+        # charity_name
+        # trust_format
+        # name_information
         if 'forename' in name and 'surname' in name:
             proprietor_names += [{
                 "name": name['forename'] + ' ' + name['surname']
@@ -94,18 +100,52 @@ def get_proprietor_names(proprietors_data):
             }]
     return proprietor_names
 
+def get_building_description_lines(address_data):
+    lines = []
+    if 'sub_building_description' in address_data and 'sub_building_no' in address_data:
+        lines.append("{0} {1}".format(address_data['sub_building_description'], address_data['sub_building_no']))
+    elif 'sub_building_description' in address_data:
+        lines.append(address_data['sub_building_description'])
+    elif 'sub_building_no' in address_data:
+        lines.append(address_data['sub_building_no'])
+    return lines
+
+def get_street_name_lines(address_data):
+    lines = []
+    street_name_string = ""
+    if 'house_no' in address_data or 'house_alpha' in address_data:
+        street_name_string+="{0}{1}".format(address_data.get('house_no', ''), address_data.get('house_alpha', ''))
+    if 'secondary_house_no' in address_data or 'secondary_house_alpha' in address_data:
+        secondary_string = "{0}{1}".format(address_data.get('secondary_house_no', ''), address_data.get('secondary_house_alpha', ''))
+        if street_name_string:
+            street_name_string+="-{0}".format(secondary_string)
+        else:
+            street_name_string+=secondary_string
+    if 'street_name' in address_data:
+        street_name = address_data['street_name']
+        if street_name_string:
+            street_name_string+=" {0}".format(street_name)
+        else:
+            street_name_string+=street_name
+    if street_name_string:
+        lines.append(street_name_string)
+    return lines
+
 def get_address_lines(address_data):
-    address_lines = []
-    #ASSUMPTION 4: all addresses are only in the house_no, street_name, town and postcode fields
+    lines = []
     if address_data:
-        first_line_address = ' '.join([address_data[k] for k in ['house_no', 'street_name'] if address_data.get(k, None)])
-        all_address_lines = [
-            first_line_address,
-            address_data.get('town', ''),
-            address_data.get('postcode', '')
-        ]
-        address_lines = [line for line in all_address_lines if line]
-    return address_lines
+        lines.append(address_data.get('leading_info', None))
+        lines = get_building_description_lines(address_data)
+        lines.append(address_data.get('house_description', None))
+        lines += get_street_name_lines(address_data)
+        lines.append(address_data.get('street_name_2', None))
+        lines.append(address_data.get('local_name', None))
+        lines.append(address_data.get('local_name_2', None))
+        lines.append(address_data.get('town', None))
+        lines.append(address_data.get('postcode', None))
+        lines.append(address_data.get('trail_info', None))
+    non_empty_lines = [x for x in lines if x is not None]
+    return non_empty_lines
 
 #This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
