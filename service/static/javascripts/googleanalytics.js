@@ -6,9 +6,9 @@ if (googleAnalyticsApiKey.length > 0) {
    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
   // Create the analytics object for use within the whole website
-  // ga('create', googleAnalyticsApiKey, 'auto');
+  ga('create', googleAnalyticsApiKey, 'auto');
   // for localhost testing uncomment the below line
-  ga('create', googleAnalyticsApiKey,{'cookieDomain': 'none'});
+  // ga('create', googleAnalyticsApiKey,{'cookieDomain': 'none'});
 
   // send an initial pageview event for logging
   ga('send', 'pageview');
