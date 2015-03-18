@@ -10,7 +10,7 @@
 
             <h1 class="heading-large">Digital Register Login</h1>
 
-            <form action="{{ url_for('signin')}}" method="post" class="form">
+            <form action="" method="post" class="form">
 
                 <div class="form-group">
                     <label for="username" class="form-label">Username</label>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="errors">
                     {% for message in form.username.errors %}
-                    {{ message }}
+                        {{ message }}
                     {% endfor %}
                 </div>
 
@@ -28,11 +28,11 @@
                 </div>
                 <div class="errors">
                     {% for message in form.password.errors %}
-                    {{ message }}
+                        {{ message }}
                     {% endfor %}
                     
                     {% if unauthorised %}
-                    {{ unauthorised }}
+                        {{ unauthorised }}
                     {% endif %}
                 </div>
 

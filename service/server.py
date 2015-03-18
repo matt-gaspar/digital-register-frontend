@@ -12,12 +12,12 @@ import logging
 import logging.config
 
 logger = logging.getLogger(__name__)
-register_title_api = app.config['REGISTER_TITLE_API']
-login_api = app.config['LOGIN_API']
-login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
-forward_slash = '/'
-unauthorised_wording = 'There was an error with your Username/Password combination. Please try again'
-google_analytics_api_key = app.config['GOOGLE_ANALYTICS_API_KEY']
+REGISTER_TITLE_API = app.config['REGISTER_TITLE_API']
+LOGIN_API = app.config['LOGIN_API']
+LOGIN_JSON = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
+FORWARD_SLASH = '/'
+UNAUTHORISED_WORDING = 'There was an error with your Username/Password combination. Please try again'
+GOOGLE_ANALYTICS_API_KEY = app.config['GOOGLE_ANALYTICS_API_KEY']
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,28 +54,27 @@ def signin_page():
 @app.route('/login', methods=['POST'])
 def signin():
     form = SigninForm(csrf_enabled=False)
-    # need to record the URL user was trying to hit before being redirected to login page
-    redirection_url = request.args.get('next') or 'title-search'
-    redirection_url = redirection_url.replace(forward_slash, '')
     if not form.validate():
-        # entered details from login form incorrect so redirect back to same page with error messages
-        return render_template('display_login.html', asset_path='../static/', next=redirection_url, form=form)
+        # entered details from login form incorrect so send back to same page with form error messages
+        return render_template('display_login.html', asset_path='../static/', form=form)
     else:
         username = form.username.data
         # form has correct details. Now need to check authorisation
         authorised = get_login_auth(username, form.password.data)
+        next_url = request.args.get('next')
         if authorised:
             login_user(User(username))
             LOGGER.info('User {} logged in'.format(username))
-            return redirect(redirection_url)
+            return redirect(next_url)
         else:
-            return render_template('display_login.html', asset_path='../static/', form=form, 
-                                   unauthorised=unauthorised_wording, next=redirection_url)
+            LOGGER.info('Invalid credentials used. User: {}.'.format(username))
+            return render_template('display_login.html', asset_path='../static/', form=form,
+                                   unauthorised=UNAUTHORISED_WORDING, next=next_url)
 
 
 def get_login_auth(username, password):
-    login_endpoint = login_api + 'user/authenticate'
-    formatted_json = login_json.format(username, password)
+    login_endpoint = LOGIN_API + 'user/authenticate'
+    formatted_json = LOGIN_JSON.format(username, password)
     headers = {'content-type': 'application/json'}
     response = requests.post(login_endpoint, data=formatted_json, headers=headers)
     authorised = False
@@ -91,7 +90,7 @@ def display_title(title_ref):
     if title:
         # If the title was found, display the page
         logger.info("VIEW REGISTER: Title number {0} was viewed by {1}".format(title_ref, "todo-user"))
-        return render_template('display_title.html', asset_path = '../static/', title=title, google_api_key=google_analytics_api_key)
+        return render_template('display_title.html', asset_path = '../static/', title=title, google_api_key=GOOGLE_ANALYTICS_API_KEY)
     else:
         abort(404)
 
@@ -112,16 +111,16 @@ def find_titles():
                 return redirect(url_for('display_title', title_ref=search_term.upper()))
             else:
                 # If title not found display 'no title found' screen
-                return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
+                return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=GOOGLE_ANALYTICS_API_KEY)
         else:
             # If search value doesn't match, return no results found screen
-            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
+            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=GOOGLE_ANALYTICS_API_KEY)
     else:
         # If not search value enter or a GET request, display the search page
-        return render_template('search.html', asset_path = '../static/', google_api_key=google_analytics_api_key)
+        return render_template('search.html', asset_path = '../static/', google_api_key=GOOGLE_ANALYTICS_API_KEY)
 
 def get_register_title(title_ref):
-    response = requests.get(register_title_api+'titles/'+title_ref)
+    response = requests.get(REGISTER_TITLE_API+'titles/'+title_ref)
     title = format_display_json(response)
     return title
 
