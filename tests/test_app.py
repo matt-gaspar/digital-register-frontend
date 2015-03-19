@@ -76,9 +76,9 @@ class TestViewTitle:
         assert 'LU1 1DZ' in str(response.data)
 
     @mock.patch('requests.get', return_value=fake_no_address_title)
-    def test_not_available_when_no_address_on_title_page(self, mock_get):
+    def test_address_string_only_on_title_page(self, mock_get):
         response = self.app.get('/titles/titleref')
-        assert 'Not Available' in str(response.data)
+        self.assertIn('17 Hazelbury Crescent<br>Luton<br>LU1 1DZ', str(response.data))
 
     @mock.patch('requests.get', return_value=fake_title)
     def test_proprietor_on_title_page(self, mock_get):

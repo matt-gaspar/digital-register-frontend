@@ -255,6 +255,12 @@ def get_address_lines(address_data):
         lines.append(address_data.get('postcode', None))
         lines.append(address_data.get('trail_info', None))
     non_empty_lines = [x for x in lines if x is not None]
+    if not non_empty_lines and address_data and address_data.get('address_string'):
+        non_empty_lines = re.sub('[\(\)]', '', address_data.get('address_string')).split(', ')
+        if re.search('[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$', non_empty_lines[-1]) and not re.search('^\s?[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}', non_empty_lines[-1]):
+            last_line = re.match('^(.*) ([A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2})$', non_empty_lines[-1])
+            non_empty_lines[-1] = last_line.group(1).strip()
+            non_empty_lines.append(last_line.group(2).strip())
     return non_empty_lines
 
 
