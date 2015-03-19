@@ -11,5 +11,7 @@ if (googleAnalyticsApiKey.length > 0) {
   // ga('create', googleAnalyticsApiKey,{'cookieDomain': 'none'});
 
   // send an initial pageview event for logging
-  ga('send', 'pageview');
+  ga('send', 'pageview', { 
+    'anonymizeIp': true 
+  });
 }
