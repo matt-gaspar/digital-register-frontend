@@ -20,6 +20,9 @@
                     </div>
 
                     <form action="/title-search/" method="POST" role="form">
+
+                        {{ form.hidden_tag() }}
+
                         <div class="form-group">
                             <label class="form-label-bold" for="search-terms">
                                 Find a title
@@ -28,15 +31,6 @@
                                 </span>
                             </label>
                             <input type="text" class="form-control" name="search_term" id="search_term" value="{% if search_term %}{{ search_term }}{% endif %}"/>
-                            {% with messages = get_flashed_messages() %}
-                              {% if messages %}
-                                <ul>
-                                {% for message in messages %}
-                                    <li><span style="color: red">{{ message }}</span></li>
-                                {% endfor %}
-                                </ul>
-                              {% endif %}
-                            {% endwith %}
                         </div>
                         <div class="form-group">
                             <button type="submit" class="button">Search</button>
