@@ -110,6 +110,7 @@ def display_title(title_ref):
 @app.route('/title-search/', methods=['GET', 'POST'])
 @login_required
 def find_titles():
+    # TODO: make this method use a WTF form, just like signin()
     if request.method == "POST":
         search_term = request.form['search_term']
         LOGGER.info("SEARCH REGISTER: {0} was searched by {1}".format(search_term, current_user.get_id()))
@@ -122,12 +123,9 @@ def find_titles():
                 session['title'] = title
                 # Redirect to the display_title method to display the digital register
                 return redirect(url_for('display_title', title_ref=search_term.upper()))
-            else:
-                # If title not found display 'no title found' screen
-                return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=GOOGLE_ANALYTICS_API_KEY)
-        else:
-            # If search value doesn't match, return no results found screen
-            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=GOOGLE_ANALYTICS_API_KEY)
+        # If search value doesn't match, return no results found screen
+        return render_template('no_title_number_results.html', asset_path = '../static/',
+            search_term=search_term, google_api_key=GOOGLE_ANALYTICS_API_KEY, form=TitleSearchForm())
     else:
         # If not search value enter or a GET request, display the search page
         return render_template('search.html', asset_path = '../static/', google_api_key=GOOGLE_ANALYTICS_API_KEY, form=TitleSearchForm())
