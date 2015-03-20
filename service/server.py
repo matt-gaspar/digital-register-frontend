@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from collections import Counter
+import json
 from flask import abort, render_template, request, redirect, url_for, session
 from flask_login import login_user, login_required, current_user
 from flask_wtf import Form
@@ -17,8 +18,6 @@ from service import app, login_manager
 
 
 REGISTER_TITLE_API = app.config['REGISTER_TITLE_API']
-LOGIN_JSON = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
-FORWARD_SLASH = '/'
 UNAUTHORISED_WORDING = 'There was an error with your Username/Password combination. Please try again'
 GOOGLE_ANALYTICS_API_KEY = app.config['GOOGLE_ANALYTICS_API_KEY']
 LOGGER = logging.getLogger(__name__)
@@ -46,9 +45,12 @@ class LoginApiClient():
         self.authentication_endpoint_url = '{}user/authenticate'.format(login_api_url)
     
     def authenticate_user(self, username, password):
-        formatted_json = LOGIN_JSON.format(username, password)
+        user_dict = {"user_id": username, "password": password}
+        request_dict = {"credentials": user_dict}
+        request_json = json.dumps(request_dict)
+
         headers = {'content-type': 'application/json'}
-        response = requests.post(self.authentication_endpoint_url, data=formatted_json, headers=headers)
+        response = requests.post(self.authentication_endpoint_url, data=request_json, headers=headers)
         return response.status_code == 200
 
 
@@ -147,7 +149,8 @@ def find_titles():
             search_term=search_term, google_api_key=GOOGLE_ANALYTICS_API_KEY, form=TitleSearchForm())
     else:
         # If not search value enter or a GET request, display the search page
-        return render_template('search.html', asset_path = '../static/', google_api_key=GOOGLE_ANALYTICS_API_KEY, form=TitleSearchForm())
+        return render_template('search.html', asset_path = '../static/',
+            google_api_key=GOOGLE_ANALYTICS_API_KEY, form=TitleSearchForm())
 
 
 def _is_csrf_enabled():
@@ -271,6 +274,7 @@ class SigninForm(Form):
 
 
 class TitleSearchForm(Form):
+    # Form used for providing CSRF tokens for title search HTTP form
     pass
 
 

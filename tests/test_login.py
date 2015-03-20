@@ -1,6 +1,8 @@
 from collections import namedtuple
+import json
 import mock
 import pytest
+
 from service.server import app
 
 
@@ -25,14 +27,42 @@ class TestLogin:
         assert 'Home' in str(response.data)
 
     @mock.patch('requests.post', return_value=successful_response)
-    def test_calls_api(self, mock_post):
+    def test_login_calls_api(self, mock_post):
         self.app.post('/login', data={'username': 'username1', 'password': 'password1'}, follow_redirects=False)
 
-        mock_post.assert_called_with(
-            'http://landregistry.local:8005/user/authenticate',
-            data='{"credentials":{"user_id":"username1","password":"password1"}}',
-            headers={'content-type': 'application/json'}
+        expected_data = {'credentials': {'user_id': 'username1', 'password': 'password1'}}
+
+        actual_calls = mock_post.mock_calls
+
+        assert len(actual_calls) == 1
+        args = actual_calls[0][1]
+        kwargs = actual_calls[0][2]
+
+        assert args == ('http://landregistry.local:8005/user/authenticate',)
+        assert len(kwargs) == 2
+        assert kwargs.get('headers') == {'content-type': 'application/json'}
+        assert 'data' in kwargs
+        body = json.loads(kwargs.get('data'))
+        assert body == expected_data
+
+    @mock.patch('requests.post', return_value=successful_response)
+    def test_login_sends_escaped_credentials_to_api(self, mock_post):
+        self.app.post(
+            '/login',
+            data={'username': 'user", "name": "some', 'password': 'pass", "word": "some'},
+            follow_redirects=False
         )
+
+        expected_data = {'credentials': {'password': 'pass", "word": "some', 'user_id': 'user", "name": "some'}}
+
+        actual_calls = mock_post.mock_calls
+
+        assert len(actual_calls) == 1
+        kwargs = actual_calls[0][2]
+
+        assert 'data' in kwargs
+        body = json.loads(kwargs.get('data'))
+        assert body == expected_data
 
     @mock.patch('requests.post', return_value=successful_response)
     def test_login_redirects_to_title_search_when_no_url_provided(self, mock_post):
