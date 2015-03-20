@@ -98,6 +98,24 @@ class TestLogin:
 
         assert 'There was an error with your Username/Password combination. Please try again' in str(response.data)
 
+    def test_cant_login_after_too_many_bad_logins(self):
+        with mock.patch('requests.post', return_value=invalid_credentials) as mock_post:
+            for i in range(15):
+                response = self.app.post(
+                    '/login',
+                    data={'username': 'username1', 'password': 'wrongword'},
+                    follow_redirects=False
+                )
+
+        with mock.patch('requests.post', return_value=successful_response) as mock_post:
+            response = self.app.post(
+                '/login',
+                data={'username': 'username1', 'password': 'password1'},
+                follow_redirects=False
+            )
+
+            assert 'There was an error with your Username/Password combination. Please try again' in str(response.data)
+
     @mock.patch('requests.post', return_value=invalid_credentials)
     def test_overlong_username(self, mock_post):
         response = self.app.post(

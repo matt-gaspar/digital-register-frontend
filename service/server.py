@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from collections import Counter
 from flask import abort, render_template, request, redirect, url_for, session
 from flask_login import login_user, login_required, current_user
 from flask_wtf import Form
@@ -8,6 +9,7 @@ import logging.config
 import os
 import re
 import requests
+import time
 from wtforms.fields import StringField, PasswordField
 from wtforms.validators import Required, Length
 
@@ -24,10 +26,10 @@ LOGGER = logging.getLogger(__name__)
 
 class User():
     def __init__(self, username):
-        self.userid = username
+        self.user_id = username
 
     def get_id(self):
-        return self.userid
+        return self.user_id
 
     def is_authenticated(self):
         return True
@@ -54,8 +56,8 @@ LOGIN_API_CLIENT = LoginApiClient(app.config['LOGIN_API'])
 
 
 @login_manager.user_loader
-def load_user(userid):
-    return User(userid)
+def load_user(user_id):
+    return User(user_id)
 
 
 @app.route('/', methods=['GET'])
@@ -72,26 +74,43 @@ def signin_page():
     )
 
 
+BAD_LOGIN_COUNTER = Counter()
+MAX_LOGIN_ATTEMPTS = 10
+NOF_SECS_BETWEEN_LOGINS = 2
+
+
 @app.route('/login', methods=['POST'])
 def signin():
     form = SigninForm(csrf_enabled=_is_csrf_enabled())
     if not form.validate():
         # entered details from login form incorrectly so send back to same page with form error messages
         return render_template('display_login.html', asset_path='../static/', form=form)
-    else:
-        username = form.username.data
+
+    next_url = request.args.get('next', 'title-search')
+
+    # form was valid
+    username = form.username.data
+    too_many_bad_logins = BAD_LOGIN_COUNTER[username] > MAX_LOGIN_ATTEMPTS
+    if not too_many_bad_logins:
         # form has correct details. Now need to check authorisation
         authorised = LOGIN_API_CLIENT.authenticate_user(username, form.password.data)
-        next_url = request.args.get('next', 'title-search')
-        
+
         if authorised:
+            del BAD_LOGIN_COUNTER[username]
             login_user(User(username))
             LOGGER.info('User {} logged in'.format(username))
             return redirect(next_url)
-        else:
-            LOGGER.info('Invalid credentials used. User: {}.'.format(username))
-            return render_template('display_login.html', asset_path='../static/', form=form,
-                                   unauthorised=UNAUTHORISED_WORDING, next=next_url)
+
+    # too many bad log-ins or not authorised
+    time.sleep(NOF_SECS_BETWEEN_LOGINS)
+    BAD_LOGIN_COUNTER.update([username])
+    log_msg = 'Too many bad logins' if too_many_bad_logins else 'Invalid credentials used'
+    nof_attempts = BAD_LOGIN_COUNTER[username]
+    LOGGER.info('{}. username: {}, attempt: {}.'.format(log_msg, username,
+                                                        nof_attempts))
+
+    return render_template('display_login.html', asset_path='../static/', form=form,
+                           unauthorised=UNAUTHORISED_WORDING, next=next_url)
 
 
 @app.route('/titles/<title_ref>', methods=['GET'])
