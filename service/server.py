@@ -43,7 +43,7 @@ class User():
 class LoginApiClient():
     def __init__(self, login_api_url):
         self.authentication_endpoint_url = '{}user/authenticate'.format(login_api_url)
-    
+
     def authenticate_user(self, username, password):
         user_dict = {"user_id": username, "password": password}
         request_dict = {"credentials": user_dict}
@@ -255,16 +255,33 @@ def get_address_lines(address_data):
         lines.append(address_data.get('postcode', None))
         lines.append(address_data.get('trail_info', None))
     non_empty_lines = [x for x in lines if x is not None]
+    # If the JSON doesn't contain the individual fields non_empty_lines will be empty
+    # Check if this is the case and if their is an address_string
     if not non_empty_lines and address_data and address_data.get('address_string'):
-        non_empty_lines = re.sub('[\(\)]', '', address_data.get('address_string')).split(', ')
-        if re.search('[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$', non_empty_lines[-1]) and not re.search('^\s?[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}', non_empty_lines[-1]):
-            last_line = re.match('^(.*) ([A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2})$', non_empty_lines[-1])
-            non_empty_lines[-1] = last_line.group(1).strip()
-            non_empty_lines.append(last_line.group(2).strip())
+        non_empty_lines = format_address_string(address_data.get('address_string'))
     return non_empty_lines
 
 
-# This method attempts to retrieve the index polygon data for the entry
+def format_address_string(address_string):
+    # remove brackets and split the address string on commas
+    address_lines = re.sub('[\(\)]', '', address_string).split(', ')
+    # Strip leading and trailing whitespace and see if the last line is a just a postcode
+    last_line = address_lines[-1].strip()
+    if not re.search('^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$', last_line):
+        # If not, remove the line from address_lines, splt out the postcode and
+        # any preceeding text and trailing text and add them to address_lines
+        # as separate lines (if they exist)
+        del(address_lines[-1])
+        matches = re.match(r'(.*\b)\s?([A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}\b)\s?(.*)?', last_line)
+        if matches.group(1) and len(matches.group(1).strip()) > 0:
+            address_lines.append(matches.group(1).strip())
+        address_lines.append(matches.group(2).strip())
+        if matches.group(3) and len(matches.group(3).strip()) > 0:
+            address_lines.append(matches.group(3).strip())
+    return address_lines
+
+
+#This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
     indexPolygon = None
     if geometry_data and ('index' in geometry_data):
@@ -275,7 +292,7 @@ def get_property_address_index_polygon(geometry_data):
 class SigninForm(Form):
     username = StringField('username', [Required(message='Username is required'), Length(min=4, max=70, message='Username is incorrect')])
     password = PasswordField('password', [Required(message='Password is required')])
-    
+
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
 
