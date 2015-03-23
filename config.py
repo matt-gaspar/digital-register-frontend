@@ -22,5 +22,8 @@ settings = os.environ.get('SETTINGS')
 if settings == 'dev':
     CONFIG_DICT['DEBUG'] = True
 elif settings == 'test':
+    # We do NOT set TESTING to True here as it turns off authentication, and we
+    # want to make sure the app behaves the same when running tests locally
+    # as it does in production.
     CONFIG_DICT['DEBUG'] = True
-    CONFIG_DICT['TESTING'] = True
+    CONFIG_DICT['SLEEP_BETWEEN_LOGINS'] = False
