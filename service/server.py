@@ -159,7 +159,7 @@ def _is_csrf_enabled():
 
 
 def get_register_title(title_ref):
-    response = requests.get(REGISTER_TITLE_API+'titles/'+title_ref)
+    response = requests.get('{}titles/{}'.format(REGISTER_TITLE_API, title_ref))
     title = format_display_json(response)
     return title
 
