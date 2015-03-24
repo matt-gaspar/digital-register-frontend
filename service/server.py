@@ -20,6 +20,13 @@ from service import app, login_manager
 REGISTER_TITLE_API = app.config['REGISTER_TITLE_API']
 UNAUTHORISED_WORDING = 'There was an error with your Username/Password combination. Please try again'
 GOOGLE_ANALYTICS_API_KEY = app.config['GOOGLE_ANALYTICS_API_KEY']
+TITLE_NUMBER_REGEX = '^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$'
+BASIC_POSTCODE_REGEX = '^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$'
+BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX = (
+    r'(?P<leading_text>.*\b)\s?'
+    r'(?P<postcode>[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}\b)\s?'
+    r'(?P<trailing_text>.*)?'
+)
 LOGGER = logging.getLogger(__name__)
 
 
@@ -43,7 +50,7 @@ class User():
 class LoginApiClient():
     def __init__(self, login_api_url):
         self.authentication_endpoint_url = '{}user/authenticate'.format(login_api_url)
-    
+
     def authenticate_user(self, username, password):
         user_dict = {"user_id": username, "password": password}
         request_dict = {"credentials": user_dict}
@@ -137,7 +144,7 @@ def find_titles():
         search_term = request.form['search_term']
         LOGGER.info("SEARCH REGISTER: {0} was searched by {1}".format(search_term, current_user.get_id()))
         # Determine search term type and preform search
-        title_number_regex = re.compile("^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$")
+        title_number_regex = re.compile(TITLE_NUMBER_REGEX)
         if title_number_regex.match(search_term.upper()):
             title = get_register_title(search_term.upper())
             if title:
@@ -255,10 +262,33 @@ def get_address_lines(address_data):
         lines.append(address_data.get('postcode', None))
         lines.append(address_data.get('trail_info', None))
     non_empty_lines = [x for x in lines if x is not None]
+    # If the JSON doesn't contain the individual fields non_empty_lines will be empty
+    # Check if this is the case and if their is an address_string
+    if not non_empty_lines and address_data and address_data.get('address_string'):
+        non_empty_lines = format_address_string(address_data.get('address_string'))
     return non_empty_lines
 
 
-# This method attempts to retrieve the index polygon data for the entry
+def format_address_string(address_string):
+    # remove brackets and split the address string on commas
+    address_lines = re.sub('[\(\)]', '', address_string).split(', ')
+    # Strip leading and trailing whitespace and see if the last line is a just a postcode
+    last_line = address_lines[-1].strip()
+    if not re.search(BASIC_POSTCODE_REGEX, last_line):
+        # If not, remove the line from address_lines, splt out the postcode and
+        # any preceeding text and trailing text and add them to address_lines
+        # as separate lines (if they exist)
+        del(address_lines[-1])
+        matches = re.match(BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX, last_line)
+        if matches.group('leading_text') and len(matches.group('leading_text').strip()) > 0:
+            address_lines.append(matches.group('leading_text').strip())
+        address_lines.append(matches.group('postcode').strip())
+        if matches.group('trailing_text') and len(matches.group('trailing_text').strip()) > 0:
+            address_lines.append(matches.group('trailing_text').strip())
+    return address_lines
+
+
+#This method attempts to retrieve the index polygon data for the entry
 def get_property_address_index_polygon(geometry_data):
     indexPolygon = None
     if geometry_data and ('index' in geometry_data):
@@ -269,7 +299,7 @@ def get_property_address_index_polygon(geometry_data):
 class SigninForm(Form):
     username = StringField('username', [Required(message='Username is required'), Length(min=4, max=70, message='Username is incorrect')])
     password = PasswordField('password', [Required(message='Password is required')])
-    
+
     def __init__(self, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
 
