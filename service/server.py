@@ -16,7 +16,6 @@ from wtforms.validators import Required, Length
 
 from service import app, login_manager
 
-
 REGISTER_TITLE_API = app.config['REGISTER_TITLE_API']
 UNAUTHORISED_WORDING = 'There was an error with your Username/Password combination. Please try again'
 GOOGLE_ANALYTICS_API_KEY = app.config['GOOGLE_ANALYTICS_API_KEY']
@@ -28,7 +27,6 @@ BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX = (
     r'(?P<trailing_text>.*)?'
 )
 LOGGER = logging.getLogger(__name__)
-
 
 class User():
     def __init__(self, username):
