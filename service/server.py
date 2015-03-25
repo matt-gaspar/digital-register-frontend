@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from collections import Counter
 import json
-from flask import abort, render_template, request, redirect, url_for, session
+from flask import abort, render_template, request, redirect, url_for, session, jsonify
 from flask_login import login_user, login_required, current_user
 from flask_wtf import Form
 from flask_wtf.csrf import CsrfProtect

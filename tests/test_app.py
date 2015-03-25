@@ -10,6 +10,10 @@ with open('tests/fake_title.json', 'r') as fake_title_json_file:
     fake_title_bytes = str.encode(fake_title_json_string)
     fake_title = FakeResponse(fake_title_bytes)
 
+with open('tests/fake_postcode_search_result.json', 'r') as fake_postcode_search_results_json_file:
+    fake_postcode_search_results_json_string = fake_postcode_search_results_json_file.read()
+    fake_postcode_search_bytes = str.encode(fake_postcode_search_results_json_string)
+    fake_postcode_search = FakeResponse(fake_postcode_search_bytes)
 
 with open('tests/fake_no_address_title.json', 'r') as fake_no_address_title_file:
     fake_no_address_title_json_string = fake_no_address_title_file.read()
@@ -83,7 +87,7 @@ class TestViewTitle:
     @mock.patch('requests.get', return_value=fake_no_address_title)
     def test_address_string_only_on_title_page(self, mock_get):
         response = self.app.get('/titles/titleref')
-        assert 'Not Available' in response.data.decode()
+        assert '17 Hazelbury Crescent<br>Luton<br>LU1 1DZ' in str(response.data)
 
     @mock.patch('requests.get', return_value=fake_title)
     def test_proprietor_on_title_page(self, mock_get):
@@ -146,16 +150,13 @@ class TestViewTitle:
             follow_redirects=False
         )
 
-    @mock.patch('requests.get', return_value=fake_title)
+    @mock.patch('requests.get', return_value=fake_postcode_search)
     def test_postcode_search_success(self, mock_get):
-        response = self.app.post('/title-search/', data=dict(search_term='LU1 1DZ'), follow_redirects=True)
+        response = self.app.post('/title-search/', data=dict(search_term='PL9 7FN'), follow_redirects=True)
         assert response.status_code == 200
         page_content = response.data.decode()
-        assert 'DN1000' in page_content
-        assert '28 August 2014 at 12:37:13' in page_content
-        assert '17 Hazelbury Crescent' in page_content
-        assert 'Luton' in page_content
-        assert 'LU1 1DZ' in page_content
+        assert 'AGL1000' in page_content
+        assert '21 Murhill Lane, Saltram Meadow, Plymouth, (PL9 7FN)' in page_content
 
 if __name__ == '__main__':
     pytest.main()

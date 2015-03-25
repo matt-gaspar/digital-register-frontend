@@ -1,0 +1,137 @@
+{
+    "titles": [
+        {
+            "data": {
+                "tenure": "Freehold",
+                "proprietors": [
+                    {
+                        "addresses": [
+                            {
+                                "auto_uppercase_override": true,
+                                "address_string": "21 High Murhill, Plymouth PL9 7FN",
+                                "address_type": "UNKNOWN"
+                            }
+                        ],
+                        "name": {
+                            "name_category": "LIMITED COMPANY OR PUBLIC LIMITED COMPANY",
+                            "auto_uppercase_override": true,
+                            "non_private_individual_name": "HEATHER POOLE PLC"
+                        }
+                    }
+                ],
+                "address": {
+                    "auto_uppercase_override": true,
+                    "house_no": "21",
+                    "town": "Plymouth",
+                    "postcode": "PL9 7FN",
+                    "address_string": "21 Murhill Lane, Saltram Meadow, Plymouth, (PL9 7FN)",
+                    "street_name": "Murhill Lane"
+                },
+                "last_application_timestamp": "1996-07-02T00:59:59+01:00"
+            },
+            "title_number": "AGL1000   "
+        },
+        {
+            "data": {
+                "tenure": "Freehold",
+                "proprietors": [
+                    {
+                        "addresses": [
+                            {
+                                "auto_uppercase_override": true,
+                                "address_string": "21 High Murhill, Plymouth PL9 7FN",
+                                "address_type": "UNKNOWN"
+                            }
+                        ],
+                        "name": {
+                            "name_category": "LIMITED COMPANY OR PUBLIC LIMITED COMPANY",
+                            "auto_uppercase_override": true,
+                            "non_private_individual_name": "HEATHER POOLE PLC"
+                        }
+                    }
+                ],
+                "address": {
+                    "auto_uppercase_override": true,
+                    "house_no": "21",
+                    "town": "Plymouth",
+                    "postcode": "PL9 7FN",
+                    "address_string": "21 Murhill Lane, Saltram Meadow, Plymouth, (PL9 7FN)",
+                    "street_name": "Murhill Lane"
+                },
+                "last_application_timestamp": "1996-07-02T00:59:59+01:00"
+            },
+            "title_number": "AGL1000   "
+        },
+        {
+            "data": {
+                "tenure": "Freehold",
+                "proprietors": [
+                    {
+                        "addresses": [
+                            {
+                                "auto_uppercase_override": true,
+                                "address_string": "21 Murhill Lane, Saltram Meadow, Plymouth, Devon PL9 7FN",
+                                "postal_county": "Kent",
+                                "address_type": "UK"
+                            }
+                        ],
+                        "name": {
+                            "name_category": "LIMITED COMPANY OR PUBLIC LIMITED COMPANY",
+                            "auto_uppercase_override": true,
+                            "trust_format": "CH",
+                            "charity_name": "The Royal Protection League Of Ginger Toms)",
+                            "surname": "JONES",
+                            "forename": "HEATHER"
+                        }
+                    },
+                    {
+                        "addresses": [
+                            {
+                                "auto_uppercase_override": true,
+                                "address_string": "8 Nowhere, Nowhere NW2 1NW",
+                                "postal_county": "Nowhere",
+                                "address_type": "UK"
+                            }
+                        ],
+                        "name": {
+                            "name_category": "LIMITED COMPANY OR PUBLIC LIMITED COMPANY",
+                            "auto_uppercase_override": true,
+                            "trust_format": "CH",
+                            "charity_name": "The Royal Protection League Of Ginger Toms)",
+                            "surname": "JONES",
+                            "forename": "JOHN"
+                        }
+                    },
+                    {
+                        "addresses": [
+                            {
+                                "auto_uppercase_override": true,
+                                "address_string": "23 Nowhere Street, Nowhere",
+                                "postal_county": "DEVON",
+                                "address_type": "UK"
+                            }
+                        ],
+                        "name": {
+                            "name_category": "LIMITED COMPANY OR PUBLIC LIMITED COMPANY",
+                            "auto_uppercase_override": true,
+                            "trust_format": "CH",
+                            "charity_name": "The Royal Protection League Of Ginger Toms)",
+                            "surname": "SMITH",
+                            "forename": "HEATHER"
+                        }
+                    }
+                ],
+                "address": {
+                    "auto_uppercase_override": true,
+                    "house_no": "23",
+                    "town": "Plymouth",
+                    "postcode": "PL9 7FN",
+                    "address_string": "23 Murhill Lane, Plymouth",
+                    "street_name": "Murhill Lane"
+                },
+                "last_application_timestamp": "2003-08-28T14:45:50+01:00"
+            },
+            "title_number": "AGL1003   "
+        }
+    ]
+}
