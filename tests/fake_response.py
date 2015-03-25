@@ -1,5 +1,6 @@
 import requests
 
+
 class FakeResponse(requests.Response):
 
     def __init__(self, content='', status_code=200):
