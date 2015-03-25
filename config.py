@@ -9,6 +9,7 @@ secret_key = os.environ['APPLICATION_SECRET_KEY']
 
 CONFIG_DICT = {
     'DEBUG': False,
+    'LOGGING': True,
     'REGISTER_TITLE_API': register_title_api,
     'LOGGING_CONFIG_FILE_PATH': logging_config_file_path,
     'GOOGLE_ANALYTICS_API_KEY': google_analytics_api_key,
@@ -25,5 +26,6 @@ elif settings == 'test':
     # We do NOT set TESTING to True here as it turns off authentication, and we
     # want to make sure the app behaves the same when running tests locally
     # as it does in production.
+    CONFIG_DICT['LOGGING'] = False
     CONFIG_DICT['DEBUG'] = True
     CONFIG_DICT['SLEEP_BETWEEN_LOGINS'] = False
