@@ -151,6 +151,7 @@ class TestLogin:
             data={'username': 'wrongname', 'password': 'wrongword'},
             follow_redirects=False
         )
+
         error_string = ('There was an error with your Username/Password '
                         'combination')
         assert error_string in str(response.data)
