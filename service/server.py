@@ -201,6 +201,8 @@ def find_titles():
         # If it matches the postcode regex ...
         elif postcode_regex.match(search_term.upper()):
             postcode_search_results = get_register_titles_via_postcode(search_term.upper())
+            print('@@@@@@@@@These are the results in the frontend')
+            print(postcode_search_results)
             return render_template('search_results.html',
                                     asset_path = '../static/',
                                     search_term=search_term,
