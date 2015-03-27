@@ -43,7 +43,10 @@ class TestViewTitle:
     def setup_method(self, method):
         self.app = app.test_client()
 
-        with mock.patch('service.server.LoginApiClient.authenticate_user', return_value=True) as mock_authorize:
+        with mock.patch(
+            'service.server.LoginApiClient.authenticate_user',
+            return_value=True
+        ) as mock_authorize:
             self._log_in_user()
 
     @mock.patch('requests.get', return_value=unavailable_title)
@@ -87,7 +90,7 @@ class TestViewTitle:
 
     @mock.patch('requests.get', return_value=fake_title)
     def test_index_geometry_on_title_page(self, mock_get):
-        coordinate_data = "[[[508263.97, 221692.13], [508266.4, 221698.84], [508266.35, 221700.25], [508270.3, 221711.15], [508273.29, 221719.53], [508271.4, 221721.65], [508270.68, 221722.44], [508269.69, 221723.53], [508263.58, 221706.87], [508258.98, 221693.93], [508258.01, 221691.18], [508262, 221689.66], [508262.95, 221689.3], [508263.97, 221692.13]]]"
+        coordinate_data = '[[[508263.97, 221692.13],'
         response = self.app.get('/titles/titleref')
         assert 'geometry' in str(response.data)
         assert 'coordinates' in str(response.data)
@@ -100,7 +103,11 @@ class TestViewTitle:
 
     @mock.patch('requests.get', return_value=fake_title)
     def test_title_search_success(self, mock_get):
-        response = self.app.post('/title-search/', data=dict(search_term='DN1000'), follow_redirects=True)
+        response = self.app.post(
+            '/title-search/',
+            data=dict(search_term='DN1000'),
+            follow_redirects=True
+        )
         assert response.status_code == 200
         assert 'DN1000' in str(response.data)
         assert '28 August 2014 at 12:37:13' in str(response.data)
@@ -109,12 +116,18 @@ class TestViewTitle:
         assert 'LU1 1DZ' in str(response.data)
 
     def test_title_search_invalid_search_value_format(self):
-        response = self.app.post('/title-search/', data=dict(search_term='invalid value'))
+        response = self.app.post(
+            '/title-search/',
+            data=dict(search_term='invalid value')
+        )
         assert 'No result(s) found' in str(response.data)
 
     @mock.patch('requests.get', return_value=unavailable_title)
     def test_title_search_title_not_found(self, mock_get):
-        response = self.app.post('/title-search/', data=dict(search_term='DT1000'))
+        response = self.app.post(
+            '/title-search/',
+            data=dict(search_term='DT1000')
+        )
         assert 'No result(s) found' in str(response.data)
 
     def _log_in_user(self):

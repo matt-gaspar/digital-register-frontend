@@ -28,7 +28,11 @@ class TestLogin:
 
     @mock.patch('requests.post', return_value=successful_response)
     def test_login_calls_api(self, mock_post):
-        self.app.post('/login', data={'username': 'username1', 'password': 'password1'}, follow_redirects=False)
+        self.app.post(
+            '/login',
+            data={'username': 'username1', 'password': 'password1'},
+            follow_redirects=False
+        )
 
         expected_data = {'credentials': {'user_id': 'username1', 'password': 'password1'}}
 
@@ -53,7 +57,12 @@ class TestLogin:
             follow_redirects=False
         )
 
-        expected_data = {'credentials': {'password': 'pass", "word": "some', 'user_id': 'user", "name": "some'}}
+        expected_data = {
+            'credentials': {
+                'password': 'pass", "word": "some',
+                'user_id': 'user", "name": "some'
+            }
+        }
 
         actual_calls = mock_post.mock_calls
 
@@ -98,21 +107,33 @@ class TestLogin:
 
     @mock.patch('requests.post', return_value=successful_response)
     def test_missing_username(self, mock_post):
-        response = self.app.post('/login', data={'username': '', 'password': 'password1'}, follow_redirects=False)
+        response = self.app.post(
+            '/login',
+            data={'username': '', 'password': 'password1'},
+            follow_redirects=False
+        )
 
         assert response.status_code == 200
         assert 'Username is required' in str(response.data)
 
     @mock.patch('requests.post', return_value=successful_response)
     def test_missing_password(self, mock_post):
-        response = self.app.post('/login', data={'username': 'username2', 'password': ''}, follow_redirects=False)
+        response = self.app.post(
+            '/login',
+            data={'username': 'username2', 'password': ''},
+            follow_redirects=False
+        )
 
         assert response.status_code == 200
         assert 'Password is required' in str(response.data)
 
     @mock.patch('requests.post', return_value=successful_response)
     def test_missing_password_and_username(self, mock_post):
-        response = self.app.post('/login', data={'username': '', 'password': ''}, follow_redirects=False)
+        response = self.app.post(
+            '/login',
+            data={'username': '', 'password': ''},
+            follow_redirects=False
+        )
 
         assert response.status_code == 200
         assert 'Password is required' in str(response.data)
@@ -125,8 +146,8 @@ class TestLogin:
             data={'username': 'wrongname', 'password': 'wrongword'},
             follow_redirects=False
         )
-
-        assert 'There was an error with your Username/Password combination. Please try again' in str(response.data)
+        error_string = 'There was an error with your Username/Password combination'
+        assert error_string in str(response.data)
 
     def test_cant_login_after_too_many_bad_logins(self):
         with mock.patch('requests.post', return_value=invalid_credentials) as mock_post:
@@ -144,24 +165,30 @@ class TestLogin:
                 follow_redirects=False
             )
 
-            assert 'There was an error with your Username/Password combination. Please try again' in str(response.data)
+            error_string = 'There was an error with your Username/Password combination'
+            assert error_string in str(response.data)
 
     @mock.patch('requests.post', return_value=invalid_credentials)
     def test_overlong_username(self, mock_post):
+        username = '1234567890'*7+'a'
         response = self.app.post(
             '/login',
             data={
-                'username': '12345678901234567890123456789012345678901234567890123456789012345678901',
+                'username': username,
                 'password': 'wrongword'
             },
             follow_redirects=False
         )
-
         assert 'Username is incorrect' in str(response.data)
 
     @mock.patch('requests.post', return_value=invalid_credentials)
     def test_too_short_username(self, mock_post):
-        response = self.app.post('/login', data={'username': '123', 'password': 'wrongword'}, follow_redirects=False)
+        response = self.app.post(
+            '/login',
+            data={'username': '123', 'password': 'wrongword'},
+            follow_redirects=False
+        )
+
         assert 'Username is incorrect' in str(response.data)
 
 
