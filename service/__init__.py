@@ -14,7 +14,7 @@ app.config.update(CONFIG_DICT)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view='/login'
+login_manager.login_view = '/login'
 
 
 def format_datetime(value):
