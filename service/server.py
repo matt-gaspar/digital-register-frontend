@@ -168,7 +168,8 @@ def find_titles():
                 current_user.get_id()))
         # Determine search term type and preform search
         title_number_regex = re.compile(TITLE_NUMBER_REGEX)
-        postcode_regex = re.compile("^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$")
+        postcode_regex = re.compile(
+            "^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$")
         # If it matches the title number regex...
         if title_number_regex.match(search_term.upper()):
             title = get_register_title(search_term.upper())
@@ -177,60 +178,42 @@ def find_titles():
                 session['title'] = title
                 # Redirect to the display_title method to display the digital
                 # register
-                return redirect(
-                    url_for('display_title', title_ref=search_term.upper()))
-        # If search value doesn't match, return no results found screen
-        return render_template(
-            'no_title_number_results.html',
-            asset_path='../static/',
-            search_term=search_term,
-            google_api_key=GOOGLE_ANALYTICS_API_KEY,
-            form=TitleSearchForm()
-        )
-                # Redirect to the display_title method to display the digital register
                 return redirect(url_for('display_title', title_ref=search_term.upper()))
             else:
                 # If title not found display 'no title found' screen
                 return render_template('search_results.html',
-                                        asset_path = '../static/',
-                                        search_term=search_term,
-                                        google_api_key=GOOGLE_ANALYTICS_API_KEY,
-                                        results = [],
-                                        form=TitleSearchForm()
-                )
+                                       asset_path='../static/',
+                                       search_term=search_term,
+                                       google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                                       results=[],
+                                       form=TitleSearchForm()
+                                       )
         # If it matches the postcode regex ...
         elif postcode_regex.match(search_term.upper()):
-            postcode_search_results = get_register_titles_via_postcode(search_term.upper())
-            print('@@@@@@@@@These are the results in the frontend')
-            print(postcode_search_results)
+            postcode_search_results = get_register_titles_via_postcode(
+                search_term.upper())
             return render_template('search_results.html',
-                                    asset_path = '../static/',
-                                    search_term=search_term,
-                                    google_api_key=GOOGLE_ANALYTICS_API_KEY,
-                                    results = postcode_search_results,
-                                    form=TitleSearchForm()
-            )
+                                   asset_path='../static/',
+                                   search_term=search_term,
+                                   google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                                   results=postcode_search_results,
+                                   form=TitleSearchForm()
+                                   )
         else:
-            # If search value doesn't match, return no results found screen
-            return render_template('no_title_number_results.html', asset_path = '../static/', search_term=search_term, google_api_key=google_analytics_api_key)
-    else:
-        # If not search value enter or a GET request, display the search page
-        return render_template(
-            'search.html',
-            asset_path='../static/',
-            google_api_key=GOOGLE_ANALYTICS_API_KEY,
-            form=TitleSearchForm()
-        )
-        return render_template('search_results.html',
-                                    asset_path = '../static/',
-                                    search_term=search_term,
-                                    google_api_key=GOOGLE_ANALYTICS_API_KEY,
-                                    results=[],
-                                    form=TitleSearchForm()
-        )
+            return render_template('search_results.html',
+                                   asset_path='../static/',
+                                   search_term=search_term,
+                                   google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                                   results=[],
+                                   form=TitleSearchForm()
+                                   )
     # If not search value enter or a GET request, display the search page
-    return render_template('search.html', asset_path = '../static/',
-            google_api_key=GOOGLE_ANALYTICS_API_KEY, form=TitleSearchForm())
+    return render_template(
+        'search.html',
+        asset_path='../static/',
+        google_api_key=GOOGLE_ANALYTICS_API_KEY,
+        form=TitleSearchForm()
+    )
 
 
 def _is_csrf_enabled():
@@ -243,10 +226,13 @@ def get_register_title(title_ref):
     title = format_display_json(response)
     return title
 
+
 def get_register_titles_via_postcode(postcode):
-    response = requests.get(REGISTER_TITLE_API+'title_search_postcode/'+postcode)
+    response = requests.get(
+        REGISTER_TITLE_API + 'title_search_postcode/' + postcode)
     results = response.json()
     return results
+
 
 def format_display_json(api_response):
     if api_response:

@@ -152,7 +152,11 @@ class TestViewTitle:
 
     @mock.patch('requests.get', return_value=fake_postcode_search)
     def test_postcode_search_success(self, mock_get):
-        response = self.app.post('/title-search/', data=dict(search_term='PL9 7FN'), follow_redirects=True)
+        response = self.app.post(
+            '/title-search/',
+            data=dict(search_term='PL9 7FN'),
+            follow_redirects=True
+        )
         assert response.status_code == 200
         page_content = response.data.decode()
         assert 'AGL1000' in page_content
