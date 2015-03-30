@@ -180,32 +180,14 @@ def find_titles():
                 return redirect(url_for('display_title', title_ref=search_term.upper()))
             else:
                 # If title not found display 'no title found' screen
-                return render_template('search_results.html',
-                                       asset_path='../static/',
-                                       search_term=search_term,
-                                       google_api_key=GOOGLE_ANALYTICS_API_KEY,
-                                       results=[],
-                                       form=TitleSearchForm()
-                                       )
+                return render_search_results([], search_term)
         # If it matches the postcode regex ...
         elif postcode_regex.match(search_term.upper()):
             postcode_search_results = get_register_titles_via_postcode(
                 search_term.upper())
-            return render_template('search_results.html',
-                                   asset_path='../static/',
-                                   search_term=search_term,
-                                   google_api_key=GOOGLE_ANALYTICS_API_KEY,
-                                   results=postcode_search_results,
-                                   form=TitleSearchForm()
-                                   )
+            return render_search_results(postcode_search_results, search_term)
         else:
-            return render_template('search_results.html',
-                                   asset_path='../static/',
-                                   search_term=search_term,
-                                   google_api_key=GOOGLE_ANALYTICS_API_KEY,
-                                   results=[],
-                                   form=TitleSearchForm()
-                                   )
+            return render_search_results([], search_term)
     # If not search value enter or a GET request, display the search page
     return render_template(
         'search.html',
@@ -213,6 +195,16 @@ def find_titles():
         google_api_key=GOOGLE_ANALYTICS_API_KEY,
         form=TitleSearchForm()
     )
+
+
+def render_search_results(results, search_term):
+    return render_template('search_results.html',
+                           asset_path='../static/',
+                           search_term=search_term,
+                           google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                           results=results,
+                           form=TitleSearchForm()
+                           )
 
 
 def _is_csrf_enabled():
