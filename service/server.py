@@ -79,7 +79,10 @@ def load_user(user_id):
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('home.html', asset_path='../static/')
+    return render_template('home.html',
+                           google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                           asset_path='../static/'
+                           )
 
 
 @app.route('/login', methods=['GET'])
@@ -87,6 +90,7 @@ def signin_page():
     return render_template(
         'display_login.html',
         asset_path='../static/',
+        google_api_key=GOOGLE_ANALYTICS_API_KEY,
         form=SigninForm(csrf_enabled=_is_csrf_enabled())
     )
 
@@ -131,8 +135,11 @@ def signin():
     LOGGER.info('{}. username: {}, attempt: {}.'.format(log_msg, username,
                                                         nof_attempts))
 
-    return render_template('display_login.html', asset_path='../static/', form=form,
-                           unauthorised=UNAUTHORISED_WORDING, next=next_url)
+    return render_template('display_login.html',
+                           google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                           asset_path='../static/', form=form,
+                           unauthorised=UNAUTHORISED_WORDING, next=next_url
+                           )
 
 
 @app.route('/titles/<title_ref>', methods=['GET'])
