@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from collections import Counter
 import json
-from flask import abort, render_template, request, redirect, url_for, session
+from flask import abort, render_template, request, redirect, url_for, session, jsonify
 from flask_login import login_user, login_required, current_user
 from flask_wtf import Form
 from flask_wtf.csrf import CsrfProtect
@@ -161,13 +161,15 @@ def display_title(title_ref):
 def find_titles():
     # TODO: make this method use a WTF form, just like signin()
     if request.method == "POST":
-        search_term = request.form['search_term']
+        search_term = request.form['search_term'].strip()
         LOGGER.info(
             "SEARCH REGISTER: {0} was searched by {1}".format(
                 search_term,
                 current_user.get_id()))
         # Determine search term type and preform search
         title_number_regex = re.compile(TITLE_NUMBER_REGEX)
+        postcode_regex = re.compile(BASIC_POSTCODE_REGEX)
+        # If it matches the title number regex...
         if title_number_regex.match(search_term.upper()):
             title = get_register_title(search_term.upper())
             if title:
@@ -175,24 +177,34 @@ def find_titles():
                 session['title'] = title
                 # Redirect to the display_title method to display the digital
                 # register
-                return redirect(
-                    url_for('display_title', title_ref=search_term.upper()))
-        # If search value doesn't match, return no results found screen
-        return render_template(
-            'no_title_number_results.html',
-            asset_path='../static/',
-            search_term=search_term,
-            google_api_key=GOOGLE_ANALYTICS_API_KEY,
-            form=TitleSearchForm()
-        )
-    else:
-        # If not search value enter or a GET request, display the search page
-        return render_template(
-            'search.html',
-            asset_path='../static/',
-            google_api_key=GOOGLE_ANALYTICS_API_KEY,
-            form=TitleSearchForm()
-        )
+                return redirect(url_for('display_title', title_ref=search_term.upper()))
+            else:
+                # If title not found display 'no title found' screen
+                return render_search_results([], search_term)
+        # If it matches the postcode regex ...
+        elif postcode_regex.match(search_term.upper()):
+            postcode_search_results = get_register_titles_via_postcode(
+                search_term.upper())
+            return render_search_results(postcode_search_results, search_term)
+        else:
+            return render_search_results([], search_term)
+    # If not search value enter or a GET request, display the search page
+    return render_template(
+        'search.html',
+        asset_path='../static/',
+        google_api_key=GOOGLE_ANALYTICS_API_KEY,
+        form=TitleSearchForm()
+    )
+
+
+def render_search_results(results, search_term):
+    return render_template('search_results.html',
+                           asset_path='../static/',
+                           search_term=search_term,
+                           google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                           results=results,
+                           form=TitleSearchForm()
+                           )
 
 
 def _is_csrf_enabled():
@@ -204,6 +216,13 @@ def get_register_title(title_ref):
         '{}titles/{}'.format(REGISTER_TITLE_API, title_ref))
     title = format_display_json(response)
     return title
+
+
+def get_register_titles_via_postcode(postcode):
+    response = requests.get(
+        REGISTER_TITLE_API + 'title_search_postcode/' + postcode)
+    results = response.json()
+    return results
 
 
 def format_display_json(api_response):
