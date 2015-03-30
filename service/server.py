@@ -168,8 +168,7 @@ def find_titles():
                 current_user.get_id()))
         # Determine search term type and preform search
         title_number_regex = re.compile(TITLE_NUMBER_REGEX)
-        postcode_regex = re.compile(
-            "^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$")
+        postcode_regex = re.compile(BASIC_POSTCODE_REGEX)
         # If it matches the title number regex...
         if title_number_regex.match(search_term.upper()):
             title = get_register_title(search_term.upper())
