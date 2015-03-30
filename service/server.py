@@ -161,7 +161,7 @@ def display_title(title_ref):
 def find_titles():
     # TODO: make this method use a WTF form, just like signin()
     if request.method == "POST":
-        search_term = request.form['search_term']
+        search_term = request.form['search_term'].strip()
         LOGGER.info(
             "SEARCH REGISTER: {0} was searched by {1}".format(
                 search_term,
