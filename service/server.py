@@ -163,7 +163,7 @@ def find_titles():
     if request.method == "POST":
         search_term = request.form['search_term'].strip()
         LOGGER.info(
-            "SEARCH REGISTER: {0} was searched by {1}".format(
+            "SEARCH REGISTER: '{0}' was searched by {1}".format(
                 search_term,
                 current_user.get_id()))
         # Determine search term type and preform search
