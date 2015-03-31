@@ -20,6 +20,10 @@ with open('tests/fake_no_address_title.json', 'r') as fake_no_address_title_file
     fake_no_address_title_bytes = str.encode(fake_no_address_title_json_string)
     fake_no_address_title = FakeResponse(fake_no_address_title_bytes)
 
+with open('tests/address_only_no_regex_match.json', 'r') as address_only_no_regex_match_file:
+    address_only_no_regex_match_file_string = address_only_no_regex_match_file.read()
+    address_only_no_regex_match_file_bytes = str.encode(address_only_no_regex_match_file_string)
+    address_only_no_regex_match_title = FakeResponse(address_only_no_regex_match_file_bytes)
 
 with open('tests/fake_partial_address.json', 'r') as fake_partial_address_file:
     fake_partial_address_json_string = fake_partial_address_file.read()
@@ -88,6 +92,13 @@ class TestViewTitle:
     def test_address_string_only_on_title_page(self, mock_get):
         response = self.app.get('/titles/titleref')
         assert '17 Hazelbury Crescent<br>Luton<br>LU1 1DZ' in str(response.data)
+
+    @mock.patch('requests.get', return_value=address_only_no_regex_match_title)
+    def test_address_string_500(self, mock_get):
+        response = self.app.get('/titles/titleref')
+        assert response.status_code == 200
+        assert 'West side of Narnia Road' in response.data.decode()
+        assert 'MagicalTown' in response.data.decode()
 
     @mock.patch('requests.get', return_value=fake_title)
     def test_proprietor_on_title_page(self, mock_get):

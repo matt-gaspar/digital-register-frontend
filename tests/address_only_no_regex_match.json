@@ -1,0 +1,32 @@
+{
+  "data": {
+    "address": {
+      "address_string": "West side of Narnia Road, MagicalTown",
+      "auto_uppercase_override": true
+    },
+    "last_application_timestamp": "2006-11-29T15:55:39+00:00",
+    "proprietors": [
+      {
+        "addresses": [
+          {
+            "address_string": "42 Magical Road, Cambridge CB2 0HH",
+            "address_type": "UK",
+            "house_no": "42",
+            "postcode": "CB2 0HH",
+            "street_name": "Magical Road",
+            "town": "Narnia"
+          }
+        ],
+        "name": {
+          "auto_uppercase_override": true,
+          "name_category": "LIMITED COMPANY OR PUBLIC LIMITED COMPANY",
+          "non_private_individual_name": "MAGICAL BEINGS LIMITED"
+        }
+      }
+    ],
+    "tenure": "Freehold"
+  },
+  "geometry_data": {
+  },
+  "title_number": "FAKETITLEREF   "
+}
