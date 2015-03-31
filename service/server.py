@@ -346,6 +346,7 @@ def get_address_lines(address_data):
 def format_address_string(address_string):
     # remove brackets and split the address string on commas
     address_lines = re.sub('[\(\)]', '', address_string).split(', ')
+    result = address_lines[:]
     # Strip leading and trailing whitespace and see if the last line is a just
     # a postcode
     last_line = address_lines[-1].strip()
@@ -357,14 +358,16 @@ def format_address_string(address_string):
         matches = re.match(
             BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX,
             last_line)
-        if matches.group('leading_text') and len(
-                matches.group('leading_text').strip()) > 0:
-            address_lines.append(matches.group('leading_text').strip())
-        address_lines.append(matches.group('postcode').strip())
-        if matches.group('trailing_text') and len(
-                matches.group('trailing_text').strip()) > 0:
-            address_lines.append(matches.group('trailing_text').strip())
-    return address_lines
+        if matches:
+            if matches.group('leading_text') and len(
+                    matches.group('leading_text').strip()) > 0:
+                address_lines.append(matches.group('leading_text').strip())
+            address_lines.append(matches.group('postcode').strip())
+            if matches.group('trailing_text') and len(
+                    matches.group('trailing_text').strip()) > 0:
+                address_lines.append(matches.group('trailing_text').strip())
+            result = address_lines
+    return result
 
 
 # This method attempts to retrieve the index polygon data for the entry
