@@ -65,6 +65,11 @@ class LoginApiClient():
         request_json = json.dumps(request_dict)
 
         headers = {'content-type': 'application/json'}
+
+        # TODO: the next line was added temporarily and should be removed as it includes passwords
+        LOGGER.info('Posting to login-api: url: {}, data: {}, '
+                    'headers: {}'.format(self.authentication_endpoint_url, request_json, headers))
+
         response = requests.post(
             self.authentication_endpoint_url,
             data=request_json,
