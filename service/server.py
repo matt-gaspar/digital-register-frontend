@@ -75,11 +75,16 @@ class LoginApiClient():
             data=request_json,
             headers=headers)
 
+        LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 1')
+
         if response.status_code == 200:
+            LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 2')
             return True
         elif _is_invalid_credentials_response(response):
+            LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 3')
             return False
         else:
+            LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 4')
             raise Exception("An error occurred when trying to authenticate user '{}'. "
                             "Login API response: (HTTP status: {}) '{}'".format(
                 username, response.status_code, response.text
@@ -91,8 +96,14 @@ LOGIN_API_CLIENT = LoginApiClient(app.config['LOGIN_API'])
 
 @app.errorhandler(Exception)
 def handle_internal_server_error(e):
+    LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 9')
+    import traceback
+    LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 10')
+    LOGGER.info(traceback.format_exc())
+    LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 11')
     LOGGER.error('An error occurred when processing a request', exc_info=e)
     # TODO: render custom Internal Server Error page instead or reraising
+    LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 12')
     abort(500)
 
 
@@ -397,10 +408,14 @@ def get_property_address_index_polygon(geometry_data):
 
 
 def _is_invalid_credentials_response(response):
+    LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 5')
     if response.status_code != 401:
+        LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 6')
         return False
 
+    LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 7')
     response_json = response.json()
+    LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 8')
     return response_json and response_json['error'] == 'Invalid credentials'
 
 
