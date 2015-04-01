@@ -101,6 +101,7 @@ def handle_internal_server_error(e):
     LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 10')
     LOGGER.info(traceback.format_exc())
     LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 11')
+    LOGGER.info('e: {}, type: {}'.format(e, type(e)))
     LOGGER.error('An error occurred when processing a request', exc_info=e)
     # TODO: render custom Internal Server Error page instead or reraising
     LOGGER.info('>>>>>>>>>>>>>>>>>>>>>>>>> 12')
