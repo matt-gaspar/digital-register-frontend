@@ -2,14 +2,19 @@ from collections import namedtuple
 import json
 import mock
 import pytest
+from werkzeug.exceptions import InternalServerError
 
 from service.server import app
 
 
 login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
-mock_response = namedtuple('Response', ['status_code'])
-successful_response = mock_response(200)
-invalid_credentials = mock_response(401)
+mock_response = namedtuple('Response', ['status_code', 'json', 'text'])
+successful_response = mock_response(200, {}, '')
+invalid_credentials = mock_response(
+    401,
+    {'error': 'Invalid credentials'},
+    '{"error": "Invalid credentials"}'
+)
 
 
 class TestLogin:
@@ -144,6 +149,30 @@ class TestLogin:
         assert 'Password is required' in str(response.data)
         assert 'Username is required' in str(response.data)
 
+    def test_login_returns_error_when_api_returns_401_with_unexpected_body(self):
+        with mock.patch(
+                'requests.post',
+                return_value=mock_response(401, None, 'Not JSON body')
+        ):
+            with pytest.raises(InternalServerError):
+                self.app.post(
+                    '/login',
+                    data={'username': 'name', 'password': 'pass'},
+                    follow_redirects=False
+                )
+
+    def test_login_returns_error_when_api_returns_error_response(self):
+        with mock.patch(
+                'requests.post',
+                return_value=mock_response(500, None, None)
+        ):
+            with pytest.raises(InternalServerError) as e:
+                self.app.post(
+                    '/login',
+                    data={'username': 'name', 'password': 'pass'},
+                    follow_redirects=False
+                )
+
     @mock.patch('requests.post', return_value=invalid_credentials)
     def test_invalid_credentials(self, mock_post):
         response = self.app.post(
@@ -152,8 +181,7 @@ class TestLogin:
             follow_redirects=False
         )
 
-        error_string = ('There was an error with your Username/Password '
-                        'combination')
+        error_string = 'There was an error with your Username/Password combination'
         assert error_string in str(response.data)
 
     @mock.patch('requests.post', return_value=invalid_credentials)
