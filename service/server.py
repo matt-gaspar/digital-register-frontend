@@ -31,6 +31,7 @@ BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX = (
     r'(?P<postcode>[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}\b)\s?'
     r'(?P<trailing_text>.*)?'
 )
+NOF_SECS_BETWEEN_LOGINS = 1
 LOGGER = logging.getLogger(__name__)
 
 
@@ -68,10 +69,26 @@ class LoginApiClient():
             self.authentication_endpoint_url,
             data=request_json,
             headers=headers)
-        return response.status_code == 200
+
+        if response.status_code == 200:
+            return True
+        elif _is_invalid_credentials_response(response):
+            return False
+        else:
+            raise Exception("An error occurred when trying to authenticate user '{}'. "
+                            "Login API response: (HTTP status: {}) '{}'".format(
+                username, response.status_code, response.text
+            ))
 
 
 LOGIN_API_CLIENT = LoginApiClient(app.config['LOGIN_API'])
+
+
+@app.errorhandler(Exception)
+def handle_internal_server_error(e):
+    LOGGER.error('An error occurred when processing a request', e)
+    # TODO: render custom Internal Server Error page instead or reraising
+    abort(500)
 
 
 @login_manager.user_loader
@@ -95,9 +112,6 @@ def signin_page():
         google_api_key=GOOGLE_ANALYTICS_API_KEY,
         form=SigninForm(csrf_enabled=_is_csrf_enabled())
     )
-
-
-NOF_SECS_BETWEEN_LOGINS = 1
 
 
 @app.route('/login', methods=['POST'])
@@ -375,6 +389,14 @@ def get_property_address_index_polygon(geometry_data):
     if geometry_data and ('index' in geometry_data):
         indexPolygon = geometry_data['index']
     return indexPolygon
+
+
+def _is_invalid_credentials_response(response):
+    if response.status_code != 401:
+        return False
+
+    response_json = response.json()
+    return response_json and response_json['error'] == 'Invalid credentials'
 
 
 class SigninForm(Form):
