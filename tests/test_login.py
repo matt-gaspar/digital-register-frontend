@@ -10,9 +10,9 @@ from service.server import app
 login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
 mock_response = namedtuple('Response', ['status_code', 'json', 'text'])
 successful_response = mock_response(200, {}, '')
-invalid_credentials = mock_response(
+invalid_credentials_response = mock_response(
     401,
-    {'error': 'Invalid credentials'},
+    lambda: {'error': 'Invalid credentials'},
     '{"error": "Invalid credentials"}'
 )
 
@@ -152,7 +152,7 @@ class TestLogin:
     def test_login_returns_error_when_api_returns_401_with_unexpected_body(self):
         with mock.patch(
                 'requests.post',
-                return_value=mock_response(401, None, 'Not JSON body')
+                return_value=mock_response(401, lambda: None, 'Not JSON body')
         ):
             with pytest.raises(InternalServerError):
                 self.app.post(
@@ -164,16 +164,16 @@ class TestLogin:
     def test_login_returns_error_when_api_returns_error_response(self):
         with mock.patch(
                 'requests.post',
-                return_value=mock_response(500, None, None)
+                return_value=mock_response(500, lambda: None, None)
         ):
-            with pytest.raises(InternalServerError) as e:
+            with pytest.raises(InternalServerError):
                 self.app.post(
                     '/login',
                     data={'username': 'name', 'password': 'pass'},
                     follow_redirects=False
                 )
 
-    @mock.patch('requests.post', return_value=invalid_credentials)
+    @mock.patch('requests.post', return_value=invalid_credentials_response)
     def test_invalid_credentials(self, mock_post):
         response = self.app.post(
             '/login',
@@ -184,7 +184,7 @@ class TestLogin:
         error_string = 'There was an error with your Username/Password combination'
         assert error_string in str(response.data)
 
-    @mock.patch('requests.post', return_value=invalid_credentials)
+    @mock.patch('requests.post', return_value=invalid_credentials_response)
     def test_overlong_username(self, mock_post):
         username = '1234567890'*7+'a'
         response = self.app.post(
@@ -197,7 +197,7 @@ class TestLogin:
         )
         assert 'Username is incorrect' in str(response.data)
 
-    @mock.patch('requests.post', return_value=invalid_credentials)
+    @mock.patch('requests.post', return_value=invalid_credentials_response)
     def test_too_short_username(self, mock_post):
         response = self.app.post(
             '/login',
