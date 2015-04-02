@@ -29,7 +29,7 @@ BASIC_POSTCODE_REGEX = '^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$'
 BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX = (
     r'(?P<leading_text>.*\b)\s?'
     r'(?P<postcode>[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}\b)\s?'
-    r'(?P<trailing_text>.*)?'
+    r'(?P<trailing_text>.*)'
 )
 NOF_SECS_BETWEEN_LOGINS = 1
 LOGGER = logging.getLogger(__name__)
@@ -75,10 +75,9 @@ class LoginApiClient():
         elif _is_invalid_credentials_response(response):
             return False
         else:
-            raise Exception("An error occurred when trying to authenticate user '{}'. "
-                            "Login API response: (HTTP status: {}) '{}'".format(
-                username, response.status_code, response.text
-            ))
+            msg_format = ("An error occurred when trying to authenticate user '{}'. "
+                          "Login API response: (HTTP status: {}) '{}'")
+            raise Exception(msg_format.format(username, response.status_code, response.text))
 
 
 LOGIN_API_CLIENT = LoginApiClient(app.config['LOGIN_API'])
