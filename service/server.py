@@ -75,10 +75,9 @@ class LoginApiClient():
         elif _is_invalid_credentials_response(response):
             return False
         else:
-            raise Exception("An error occurred when trying to authenticate user '{}'. "
-                            "Login API response: (HTTP status: {}) '{}'".format(
-                username, response.status_code, response.text
-            ))
+            msg_format = ("An error occurred when trying to authenticate user '{}'. "
+                          "Login API response: (HTTP status: {}) '{}'")
+            raise Exception(msg_format.format(username, response.status_code, response.text))
 
 
 LOGIN_API_CLIENT = LoginApiClient(app.config['LOGIN_API'])
