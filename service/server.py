@@ -102,6 +102,7 @@ def home():
                            asset_path='../static/'
                            )
 
+
 @app.route('/cookies', methods=['GET'])
 def cookies():
     return render_template('cookies.html',
