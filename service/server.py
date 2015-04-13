@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from collections import Counter
 import json
-from flask import abort, render_template, request, redirect, url_for, session, jsonify
+from flask import abort, render_template, request, redirect, url_for, session
+from flask import Markup
 from flask_login import login_user, login_required, current_user
 from flask_wtf import Form
 from flask_wtf.csrf import CsrfProtect
@@ -17,18 +17,21 @@ from wtforms.validators import Required, Length
 from service import app, login_manager
 
 REGISTER_TITLE_API = app.config['REGISTER_TITLE_API']
-UNAUTHORISED_WORDING = (
-    'There was an error with your Username/Password' +
-    ' combination. Please try again'
-)
+UNAUTHORISED_WORDING = Markup('There was an error with your Username/Password '
+                              'combination. If this problem persists please '
+                              'contact us at <br/>'
+                              'digital-register-feedback@'
+                              'digital.landregistry.gov.uk'
+                              )
 GOOGLE_ANALYTICS_API_KEY = app.config['GOOGLE_ANALYTICS_API_KEY']
 TITLE_NUMBER_REGEX = '^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$'
-BASIC_POSTCODE_REGEX = '^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$'
+BASIC_POSTCODE_REGEX = '^[A-Z]{1,2}[0-9R][0-9A-Z]? ?[0-9][A-Z]{2}$'
 BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX = (
     r'(?P<leading_text>.*\b)\s?'
     r'(?P<postcode>[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}\b)\s?'
-    r'(?P<trailing_text>.*)?'
+    r'(?P<trailing_text>.*)'
 )
+NOF_SECS_BETWEEN_LOGINS = 1
 LOGGER = logging.getLogger(__name__)
 
 
@@ -66,10 +69,32 @@ class LoginApiClient():
             self.authentication_endpoint_url,
             data=request_json,
             headers=headers)
-        return response.status_code == 200
+
+        if response.status_code == 200:
+            return True
+        elif _is_invalid_credentials_response(response):
+            return False
+        else:
+            msg_format = ("An error occurred when trying to authenticate user '{}'. "
+                          "Login API response: (HTTP status: {}) '{}'")
+            raise Exception(msg_format.format(username, response.status_code, response.text))
 
 
 LOGIN_API_CLIENT = LoginApiClient(app.config['LOGIN_API'])
+
+
+def sanitise_postcode(postcode_in):
+    # We strip out the spaces - and reintroduce one four characters from end
+    no_spaces = postcode_in.replace(' ', '')
+    postcode = no_spaces[:len(no_spaces) - 3] + ' ' + no_spaces[-3:]
+    return postcode
+
+
+@app.errorhandler(Exception)
+def handle_internal_server_error(e):
+    LOGGER.error('An error occurred when processing a request', exc_info=e)
+    # TODO: render custom Internal Server Error page instead or reraising
+    abort(500)
 
 
 @login_manager.user_loader
@@ -85,6 +110,14 @@ def home():
                            )
 
 
+@app.route('/cookies', methods=['GET'])
+def cookies():
+    return render_template('cookies.html',
+                           google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                           asset_path='../static/'
+                           )
+
+
 @app.route('/login', methods=['GET'])
 def signin_page():
     return render_template(
@@ -93,11 +126,6 @@ def signin_page():
         google_api_key=GOOGLE_ANALYTICS_API_KEY,
         form=SigninForm(csrf_enabled=_is_csrf_enabled())
     )
-
-
-BAD_LOGIN_COUNTER = Counter()
-MAX_LOGIN_ATTEMPTS = 10
-NOF_SECS_BETWEEN_LOGINS = 1
 
 
 @app.route('/login', methods=['POST'])
@@ -113,27 +141,20 @@ def signin():
 
     # form was valid
     username = form.username.data
-    too_many_bad_logins = BAD_LOGIN_COUNTER[username] > MAX_LOGIN_ATTEMPTS
-    if not too_many_bad_logins:
-        # form has correct details. Now need to check authorisation
-        authorised = LOGIN_API_CLIENT.authenticate_user(
-            username,
-            form.password.data)
+    # form has correct details. Now need to check authorisation
+    authorised = LOGIN_API_CLIENT.authenticate_user(
+        username,
+        form.password.data
+    )
 
-        if authorised:
-            del BAD_LOGIN_COUNTER[username]
-            login_user(User(username))
-            LOGGER.info('User {} logged in'.format(username))
-            return redirect(next_url)
+    if authorised:
+        login_user(User(username))
+        LOGGER.info('User {} logged in'.format(username))
+        return redirect(next_url)
 
     # too many bad log-ins or not authorised
     if app.config.get('SLEEP_BETWEEN_LOGINS', True):
         time.sleep(NOF_SECS_BETWEEN_LOGINS)
-    BAD_LOGIN_COUNTER.update([username])
-    log_msg = 'Too many bad logins' if too_many_bad_logins else 'Invalid credentials used'
-    nof_attempts = BAD_LOGIN_COUNTER[username]
-    LOGGER.info('{}. username: {}, attempt: {}.'.format(log_msg, username,
-                                                        nof_attempts))
 
     return render_template('display_login.html',
                            google_api_key=GOOGLE_ANALYTICS_API_KEY,
@@ -176,23 +197,25 @@ def find_titles():
         # Determine search term type and preform search
         title_number_regex = re.compile(TITLE_NUMBER_REGEX)
         postcode_regex = re.compile(BASIC_POSTCODE_REGEX)
+        search_term = search_term.upper()
         # If it matches the title number regex...
-        if title_number_regex.match(search_term.upper()):
-            title = get_register_title(search_term.upper())
+        if title_number_regex.match(search_term):
+            title = get_register_title(search_term)
             if title:
                 # If the title exists store it in the session
                 session['title'] = title
                 # Redirect to the display_title method to display the digital
                 # register
-                return redirect(url_for('display_title', title_ref=search_term.upper()))
+                return redirect(url_for('display_title', title_ref=search_term))
             else:
                 # If title not found display 'no title found' screen
                 return render_search_results([], search_term)
         # If it matches the postcode regex ...
-        elif postcode_regex.match(search_term.upper()):
-            postcode_search_results = get_register_titles_via_postcode(
-                search_term.upper())
-            return render_search_results(postcode_search_results, search_term)
+        elif postcode_regex.match(search_term):
+            # Short term fix to enable user to search with postcode without spaces
+            postcode = sanitise_postcode(search_term)
+            postcode_search_results = get_register_titles_via_postcode(postcode)
+            return render_search_results(postcode_search_results, postcode)
         else:
             return render_search_results([], search_term)
     # If not search value enter or a GET request, display the search page
@@ -243,7 +266,10 @@ def format_display_json(api_response):
         title = {
             # ASSUMPTION 1: All titles have a title number
             'number': title_api['title_number'],
-            'last_changed': title_api['data'].get('last_application_timestamp', 'No data'),
+            'last_changed': title_api['data'].get(
+                'last_application_timestamp',
+                'No data'
+            ),
             'address_lines': address_lines,
             'proprietors': proprietor_names,
             'tenure': title_api['data'].get('tenure', 'No data'),
@@ -280,7 +306,8 @@ def get_proprietor_names(proprietors_data):
 
 def get_building_description_lines(address_data):
     lines = []
-    if 'sub_building_description' in address_data and 'sub_building_no' in address_data:
+    if ('sub_building_description' in address_data and
+            'sub_building_no' in address_data):
         lines.append(
             "{0} {1}".format(
                 address_data['sub_building_description'],
@@ -300,7 +327,8 @@ def get_street_name_lines(address_data):
             address_data.get(
                 'house_no', ''), address_data.get(
                 'house_alpha', ''))
-    if 'secondary_house_no' in address_data or 'secondary_house_alpha' in address_data:
+    if ('secondary_house_no' in address_data or
+            'secondary_house_alpha' in address_data):
         secondary_string = "{0}{1}".format(
             address_data.get(
                 'secondary_house_no', ''), address_data.get(
@@ -334,7 +362,8 @@ def get_address_lines(address_data):
         lines.append(address_data.get('postcode', None))
         lines.append(address_data.get('trail_info', None))
     non_empty_lines = [x for x in lines if x is not None]
-    # If the JSON doesn't contain the individual fields non_empty_lines will be empty
+    # If the JSON doesn't contain the individual fields non_empty_lines will be
+    # empty
     # Check if this is the case and if their is an address_string
     if not non_empty_lines and address_data and address_data.get(
             'address_string'):
@@ -378,6 +407,14 @@ def get_property_address_index_polygon(geometry_data):
     return indexPolygon
 
 
+def _is_invalid_credentials_response(response):
+    if response.status_code != 401:
+        return False
+
+    response_json = response.json()
+    return response_json and response_json['error'] == 'Invalid credentials'
+
+
 class SigninForm(Form):
     username = StringField(
         'username', [
@@ -401,7 +438,7 @@ class TitleSearchForm(Form):
 def run_app():
     CsrfProtect(app)
     port = int(os.environ.get('PORT', 8003))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port)
 
 
 if __name__ == '__main__':

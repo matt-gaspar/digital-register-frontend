@@ -2,14 +2,19 @@ from collections import namedtuple
 import json
 import mock
 import pytest
+from werkzeug.exceptions import InternalServerError
 
 from service.server import app
 
 
 login_json = '{{"credentials":{{"user_id":"{}","password":"{}"}}}}'
-mock_response = namedtuple('Response', ['status_code'])
-successful_response = mock_response(200)
-invalid_credentials = mock_response(401)
+mock_response = namedtuple('Response', ['status_code', 'json', 'text'])
+successful_response = mock_response(200, {}, '')
+invalid_credentials_response = mock_response(
+    401,
+    lambda: {'error': 'Invalid credentials'},
+    '{"error": "Invalid credentials"}'
+)
 
 
 class TestLogin:
@@ -34,7 +39,9 @@ class TestLogin:
             follow_redirects=False
         )
 
-        expected_data = {'credentials': {'user_id': 'username1', 'password': 'password1'}}
+        expected_data = {
+            'credentials': {'user_id': 'username1', 'password': 'password1'}
+        }
 
         actual_calls = mock_post.mock_calls
 
@@ -53,7 +60,10 @@ class TestLogin:
     def test_login_sends_escaped_credentials_to_api(self, mock_post):
         self.app.post(
             '/login',
-            data={'username': 'user", "name": "some', 'password': 'pass", "word": "some'},
+            data={
+                'username': 'user", "name": "some',
+                'password': 'pass", "word": "some'
+            },
             follow_redirects=False
         )
 
@@ -74,7 +84,7 @@ class TestLogin:
         assert body == expected_data
 
     @mock.patch('requests.post', return_value=successful_response)
-    def test_login_redirects_to_title_search_when_no_url_provided(self, mock_post):
+    def test_login_redirects_to_title_search_if_no_target_url(self, mock_post):
         response = self.app.post(
             '/login?next=titles',
             data={'username': 'username1', 'password': 'password1'},
@@ -139,36 +149,42 @@ class TestLogin:
         assert 'Password is required' in str(response.data)
         assert 'Username is required' in str(response.data)
 
-    @mock.patch('requests.post', return_value=invalid_credentials)
+    def test_login_returns_error_when_api_returns_401_with_unexpected_body(self):
+        with mock.patch(
+                'requests.post',
+                return_value=mock_response(401, lambda: None, 'Not JSON body')
+        ):
+            with pytest.raises(InternalServerError):
+                self.app.post(
+                    '/login',
+                    data={'username': 'name', 'password': 'pass'},
+                    follow_redirects=False
+                )
+
+    def test_login_returns_error_when_api_returns_error_response(self):
+        with mock.patch(
+                'requests.post',
+                return_value=mock_response(500, lambda: None, None)
+        ):
+            with pytest.raises(InternalServerError):
+                self.app.post(
+                    '/login',
+                    data={'username': 'name', 'password': 'pass'},
+                    follow_redirects=False
+                )
+
+    @mock.patch('requests.post', return_value=invalid_credentials_response)
     def test_invalid_credentials(self, mock_post):
         response = self.app.post(
             '/login',
             data={'username': 'wrongname', 'password': 'wrongword'},
             follow_redirects=False
         )
+
         error_string = 'There was an error with your Username/Password combination'
         assert error_string in str(response.data)
 
-    def test_cant_login_after_too_many_bad_logins(self):
-        with mock.patch('requests.post', return_value=invalid_credentials) as mock_post:
-            for i in range(15):
-                response = self.app.post(
-                    '/login',
-                    data={'username': 'username1', 'password': 'wrongword'},
-                    follow_redirects=False
-                )
-
-        with mock.patch('requests.post', return_value=successful_response) as mock_post:
-            response = self.app.post(
-                '/login',
-                data={'username': 'username1', 'password': 'password1'},
-                follow_redirects=False
-            )
-
-            error_string = 'There was an error with your Username/Password combination'
-            assert error_string in str(response.data)
-
-    @mock.patch('requests.post', return_value=invalid_credentials)
+    @mock.patch('requests.post', return_value=invalid_credentials_response)
     def test_overlong_username(self, mock_post):
         username = '1234567890'*7+'a'
         response = self.app.post(
@@ -181,7 +197,7 @@ class TestLogin:
         )
         assert 'Username is incorrect' in str(response.data)
 
-    @mock.patch('requests.post', return_value=invalid_credentials)
+    @mock.patch('requests.post', return_value=invalid_credentials_response)
     def test_too_short_username(self, mock_post):
         response = self.app.post(
             '/login',
