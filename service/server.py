@@ -25,7 +25,7 @@ UNAUTHORISED_WORDING = Markup('There was an error with your Username/Password '
                               )
 GOOGLE_ANALYTICS_API_KEY = app.config['GOOGLE_ANALYTICS_API_KEY']
 TITLE_NUMBER_REGEX = '^([A-Z]{0,3}[1-9][0-9]{0,5}|[0-9]{1,6}[ZT])$'
-BASIC_POSTCODE_REGEX = '^[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}$'
+BASIC_POSTCODE_REGEX = '^[A-Z]{1,2}[0-9R][0-9A-Z]? ?[0-9][A-Z]{2}$'
 BASIC_POSTCODE_WITH_SURROUNDING_GROUPS_REGEX = (
     r'(?P<leading_text>.*\b)\s?'
     r'(?P<postcode>[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}\b)\s?'
