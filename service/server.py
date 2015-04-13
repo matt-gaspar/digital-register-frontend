@@ -83,6 +83,13 @@ class LoginApiClient():
 LOGIN_API_CLIENT = LoginApiClient(app.config['LOGIN_API'])
 
 
+def sanitise_postcode(postcode_in):
+    # We strip out the spaces - and reintroduce one four characters from end
+    no_spaces = postcode_in.replace(' ', '')
+    postcode = no_spaces[:len(no_spaces) - 3] + ' ' + no_spaces[-3:]
+    return postcode
+
+
 @app.errorhandler(Exception)
 def handle_internal_server_error(e):
     LOGGER.error('An error occurred when processing a request', exc_info=e)
@@ -190,23 +197,25 @@ def find_titles():
         # Determine search term type and preform search
         title_number_regex = re.compile(TITLE_NUMBER_REGEX)
         postcode_regex = re.compile(BASIC_POSTCODE_REGEX)
+        search_term = search_term.upper()
         # If it matches the title number regex...
-        if title_number_regex.match(search_term.upper()):
-            title = get_register_title(search_term.upper())
+        if title_number_regex.match(search_term):
+            title = get_register_title(search_term)
             if title:
                 # If the title exists store it in the session
                 session['title'] = title
                 # Redirect to the display_title method to display the digital
                 # register
-                return redirect(url_for('display_title', title_ref=search_term.upper()))
+                return redirect(url_for('display_title', title_ref=search_term))
             else:
                 # If title not found display 'no title found' screen
                 return render_search_results([], search_term)
         # If it matches the postcode regex ...
-        elif postcode_regex.match(search_term.upper()):
-            postcode_search_results = get_register_titles_via_postcode(
-                search_term.upper())
-            return render_search_results(postcode_search_results, search_term)
+        elif postcode_regex.match(search_term):
+            # Short term fix to enable user to search with postcode without spaces
+            postcode = sanitise_postcode(search_term)
+            postcode_search_results = get_register_titles_via_postcode(postcode)
+            return render_search_results(postcode_search_results, postcode)
         else:
             return render_search_results([], search_term)
     # If not search value enter or a GET request, display the search page
