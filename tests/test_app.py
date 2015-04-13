@@ -1,7 +1,7 @@
 import mock
 import pytest
 
-from service.server import app
+from service.server import app, sanitise_postcode
 from .fake_response import FakeResponse
 
 
@@ -172,6 +172,17 @@ class TestViewTitle:
         page_content = response.data.decode()
         assert 'AGL1000' in page_content
         assert '21 Murhill Lane, Saltram Meadow, Plymouth, (PL9 7FN)' in page_content
+
+    def test_postcode_without_space_search_success(self):
+        search_term = 'PL98TB'
+        postcode = sanitise_postcode(search_term)
+        assert postcode == 'PL9 8TB'
+
+    def test_postcode_bad_space_search_success(self):
+        search_term = 'PL 98TB'
+        postcode = sanitise_postcode(search_term)
+        assert postcode == 'PL9 8TB'
+
 
 if __name__ == '__main__':
     pytest.main()
