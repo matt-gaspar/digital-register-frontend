@@ -103,6 +103,14 @@ def home():
                            )
 
 
+@app.route('/cookies', methods=['GET'])
+def cookies():
+    return render_template('cookies.html',
+                           google_api_key=GOOGLE_ANALYTICS_API_KEY,
+                           asset_path='../static/'
+                           )
+
+
 @app.route('/login', methods=['GET'])
 def signin_page():
     return render_template(
