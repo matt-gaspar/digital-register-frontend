@@ -19,7 +19,9 @@
 
                     </div>
 
-                    <form action="/title-search/" method="POST" role="form">
+                    <form action="/title-search/" method="POST" role="form" onsubmit="ga('send', 'pageview', {
+                        'anonymizeIp': true,
+                        'page': 'title-search?searchText=' + document.getElementById('search_term').value});">
 
                         {{ form.hidden_tag() }}
 
